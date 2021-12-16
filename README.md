@@ -36,7 +36,7 @@ La sauvegarde de la partie s'effectue sous la forme d'un cookie, ce qui implique
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
 
-Son code source est 100% web : il ne s'agit que de HTML, de CSS et de javascript.
+Son code source est 100% web: il ne s'agit que de *HTML* (structure des interfaces), de *CSS* (mise en page) et de *javascript* (moteur du jeu).
 
 Un certain nombre de comportements du jeu, sont paramétrables via des constantes déclarées au début du fichier _main.js_.
 
@@ -45,3 +45,9 @@ Les éléments du magasin sont déclarés et paramétrés via un objet _scope_, 
 Le vaisseau, les astéroides ainsi que les bonus sont des composants web à part entière, héritant de <div></div>
 
 Le composant <rs-dialog></rs-dialog> de la RS WCL (publiée sur ce même compte GitHub) a été intégré pour les popups (magasin, demande de confirmation de sauvegarde et rapport de fin de vague)
+
+La classe AH_Shop sert à lire, présenter et modifier les informations relatives au magasin et aux améliorations.
+
+La classe AH_Timer, quant à elle, gère tout ce qui est lié au temps qui passe: c'est elle qui invoque les fonction de déplacement, contrôle les collisions, etc...
+
+Parmi les trucs à revoir: au début, j'ai voulu utiliser la classe RS_WCL pour me simplifier la vie sur la création des composants du jeu (voir classe *AH_Spaceship* dans _AH_Components.js_), mais au final, je me suis rapidement rendu compte qu'il s'aggissait d'une erreur, dans ce contexte d'utilisation. En effet, la RS WCL est orientée templates HTML, or tous les éléments sont créer et gérés par le programme javascript. En revanche, il pourrait être opportun de gérer les templates dans *RS_Dialog* (permettre d'utiliser l'url d'un template HTML comme contenu d'une popup), pour se libérer du code de génération des popup (un peu indigeste, il faut bien le reconnaître).
