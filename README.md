@@ -36,7 +36,7 @@ La sauvegarde de la partie s'effectue sous la forme d'un cookie (valide 400 jour
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
 
-Son code source est 100% web: il ne s'agit que de *HTML* (structure des interfaces), de *CSS* (mise en page) et de *javascript* (moteur du jeu).
+Son code source est 100% web: il ne s'agit que de +HTML+ (structure des interfaces), de +CSS+ (mise en page) et de +javascript+ (moteur du jeu).
 
 Un certain nombre de comportements du jeu, sont paramétrables via des constantes déclarées au début du fichier _main.js_.
 
