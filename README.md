@@ -15,7 +15,7 @@ Le vaisseau doit changer de secteur de recherche prochainement: ce système plan
 ### Contrôles atypiques
 Nous sommes dans l'espace. Il n'y a donc aucun frottement. Un objet lancé ne ralentit pas de lui même. Une impulsion entraine donc une inertie sans fin, une dérive. Pour mettre fin à cette dérive, il vous faudra délivrer une impulsion équivalente dans le sens opposé.
 
-Les premiers temps, il est fort probable que vous soyez dé
+Les premiers temps, il est fort probable que vous soyez déstabilisé: ne vous découragez pas, on s'y fait assez vite, finalement.
 
 ### Commandes du vaisseau récolteur
 Le vaisseau se dirige à l'aide des touches fléchées du clavier:
@@ -42,9 +42,9 @@ Un certain nombre de comportements du jeu, sont paramétrables via des constante
 
 Les éléments du magasin sont déclarés et paramétrés via un objet _scope_, rattaché au controller pricipal et initialisé dans le fichier _main.js_.
 
-Le vaisseau, les astéroides ainsi que les bonus sont des composants web à part entière, héritant de <div></div>
+Le vaisseau, les astéroides ainsi que les bonus sont des composants web à part entière, héritant de _HTMLDivElement_
 
-Le composant <rs-dialog></rs-dialog> de la RS WCL (publiée sur ce même compte GitHub) a été intégré pour les popups (magasin, demande de confirmation de sauvegarde et rapport de fin de vague)
+Le composant *RS_Dialog* de la RS WCL (publiée sur ce même compte GitHub) a été intégré pour les popups (magasin, demande de confirmation de sauvegarde et rapport de fin de vague)
 
 La classe AH_Shop sert à lire, présenter et modifier les informations relatives au magasin et aux améliorations.
 
