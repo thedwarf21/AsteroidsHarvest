@@ -28,6 +28,8 @@ La barre espace permet de tirer.
 
 La touche 'P' permet de mettre le jeu en pause (ou de le relancer quand il est en pause)
 
+Vos tirs, lorsqu'ils ne détruisent pas l'astéroïde touché, modifient sa tajectoire. Maîtriser cet aspect du jeu vous sera d'un grand secours.
+
 ### Le magasin
 Dans la barre couleur or, en haut de la fenêtre, est affiché le montant de vos économies. La monnaie ayant cours sur le _StarShip Hope_ est le Brouzouf.
 
