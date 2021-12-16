@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="" />
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="spaceship.png" />
+    <title>Asteroids Harvest</title>
+
+    <!-- Styles et fonts -->
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <link rel="stylesheet" type="text/css" href="rs_dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="AH_components.css"/>
+    
+    <!-- Scripts généraux -->
+    <script type="text/javascript" src="rs_wcl.js"></script>
+    <script type="text/javascript" src="rs_dialog.js"></script>
+    <script type="text/javascript" src="AH_components.js"></script>
+    <script type="text/javascript" src="AH_Timer.js"></script>
+    <script type="text/javascript" src="AH_Shop.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+
+    <!-- Lancement de l'initialisation -->
+    <script type="text/javascript">
+      AH_MainController.init();
+    </script>
+  </head>
+
+  <!-- Corps de la page -->
+  <body onload="AH_Shop.show()">
+    <div class="page" id="page">
+      <div class="opaque-panel panel-ns"></div>
+      <div class="middle-panel">
+        <div class="opaque-panel panel-we"></div>
+        <div class="game-window" id="game-window">
+          <ah-spaceship rs-model="scope.spaceship"></ah-spaceship>
+        </div>
+        <div class="opaque-panel panel-we"></div>
+      </div>
+      <div class="opaque-panel panel-ns"></div>
+    </div>
+  </body>
+</html>
