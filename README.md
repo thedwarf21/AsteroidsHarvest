@@ -8,7 +8,7 @@ Seule une infime partie de la population mondiale a pu fuir l'apocalypse, mais l
 
 Vous faites partie de ces derniers survivants. Affecté à la récolte des astéroïdes, votre travail consiste à découper les astéroïdes afin d'en extraire les minerais nécessaires à l'alimentation des systèmes de propulsion du _StarShip Hope_. A ce titre, vous disposez d'un vaisseau monoplace équipé d'un canon à plasma, capable d'expédier des boules de plasma confinées au sein d'un champ magnétique.
 
-Le vaisseau doit changer de secteur de recherche prochainement: ce système planétaire ne comporte apparemment aucune planète apte à abriter la vie. Il est donc nécessaire de "faire le plein de carburant" avant de partir. Vous faites donc route vers la ceinture d'astéroïdes la plus proche... car vous avez bon espoir que la vente des minerais que vous aurez collecté, vous permettra de suffisamment améliorer votre vaisseau pour ne pas faire de cette mission, une mission suicide. 
+Le vaisseau doit changer de secteur de recherche prochainement: ce système planétaire ne comporte apparemment aucune planète apte à abriter la vie. Il est donc nécessaire de "faire le plein de carburant" avant de partir vers de nouveaux horizons. Vous faites donc route vers la ceinture d'astéroïdes la plus proche... car vous avez bon espoir que la vente des minerais que vous aurez collecté, vous permettra de suffisamment améliorer votre vaisseau pour ne pas faire de cette mission, une mission suicide. 
 
 ## Manuel de jeu
 
