@@ -31,7 +31,7 @@ Dans la barre couleur or, en haut de la fenêtre, est affiché le montant de vos
 
 De nombreuses (et indispensables) améliorations vous attendent ici alors ne vous en privez pas.
 
-La sauvegarde de la partie s'effectue sous la forme d'un cookie, ce qui implique notamment, que votre sauvegarde n'est valable que pour le navigateur web et l'appareil utilisés. Par exemple, si vous faites une sauvegarde en jouant sur votre PC avec le navigateur Edge, votre sauvegarde ne sera pas accessible, si vous jouez sur le même PC mais avec un navigateur web différent, ou si vous jouez sur un autre PC, quel que soit le navigateur utilisé.
+La sauvegarde de la partie s'effectue sous la forme d'un cookie (valide 400 jours, pour info alors pas de panique), ce qui implique notamment, que votre sauvegarde n'est valable que pour le navigateur web et l'appareil utilisés. Par exemple, si vous faites une sauvegarde en jouant sur votre PC avec le navigateur Edge, votre sauvegarde ne sera pas accessible, si vous jouez sur le même PC mais avec un navigateur web différent, ou si vous jouez sur un autre PC, quel que soit le navigateur utilisé.
 
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
