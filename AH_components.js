@@ -1,3 +1,23 @@
+/**
+ * Ajoute une div affichant la hitbox, à _customElement_
+ *
+ * @param      {HTMLElement}  customElement  Le composant de jeu dont vous souhaitez voir la hitbox
+ * @param      {number}       pxElementSize  La taille (côté du carré) de la box de l'élément HTML correspondant
+ */
+function ah_addHitBox(customElement, pxElementSize) {
+  let div = document.createElement("DIV");
+  div.classList.add("hitbox");
+
+  // On applique le coefficient pour obtenir la marge 
+  // marge de centrage => réduction du rayon = <rayon_hitbox_de_base> - <rayon_hitbox_souhaité>
+  let margin = pxElementSize/2 * (1 - customElement.hitbox_size_coef);
+  let cssSize = `calc(100% - ${margin * 2}px)`;
+  div.style.margin = `${margin}px`;
+  div.style.height = cssSize;
+  div.style.width = cssSize;
+  customElement.appendChild(div);
+}
+
 //---------------------------------------------------------------------------------------------------
 //                                 Vaisseau du joueur
 //---------------------------------------------------------------------------------------------------
@@ -27,11 +47,16 @@ class AH_Spaceship extends HTMLDivElement {
       this.params = target_obj[property];
     }
 
+    // Cette propriété est nécessaire pour régler la hitbox des visuels qui ne sont pas des disques parfaits
+    this.hitbox_size_coef = SPACESHIP_HITBOX_RADIUS_COEF;
+
+    // Si le paramétrage du jeu le spécifie, on affiche la HitBox => aide visuelle au paramétrage
+    if (AH_MainController.scope.game.showHitboxes)
+      ah_addHitBox(this, SPACESHIP_SIZE);
+
     // Position initiale, au centre de la scène
     this.init();
 
-    // Cette propriété est nécessaire pour régler la hirbox des visuels rectangulaires
-    this.hitbox_size_coef = SPACESHIP_HITBOX_RADIUS_COEF;
   }
 
   /*****************************
@@ -43,6 +68,7 @@ class AH_Spaceship extends HTMLDivElement {
     this.params.deltaY = 0;
     this.x = (WINDOW_WIDTH - SPACESHIP_SIZE) / 2;
     this.y = (WINDOW_HEIGHT - SPACESHIP_SIZE) / 2;
+    this.pixel_size = SPACESHIP_SIZE;
     this.style.top = this.y + "px";
     this.style.left = this.x + "px";
   }
@@ -128,12 +154,16 @@ class AH_HTML_Spaceship extends HTMLElement {
     shadow.appendChild(this.innerSpaceship);
   }
 
-  // Transposition des fonction du composant interne
+  // Transposition des fonction et propriétés du composant interne
+  get hitbox_size_coef() { return this.innerSpaceship.hitbox_size_coef; }
+  get pixel_size() { return this.innerSpaceship.pixel_size; }
+  get x() { return this.innerSpaceship.x; }
+  get y() { return this.innerSpaceship.y; }
   move() { this.innerSpaceship.move(); }
   shoot() { this.innerSpaceship.shoot(); }
   init() { this.innerSpaceship.init(); }
   explode() { this.innerSpaceship.explode(); }
-  getBoundingClientRect() { return this.innerSpaceship.getBoundingClientRect(); }
+  getBoundingClientRect() { return this.innerSpaceship.getBoundingClientRect(); } // Surcharge de la fonction HTMLElement.getBoundingClientRect()
 }
 customElements.define('ah-spaceship', AH_HTML_Spaceship);
 
@@ -242,6 +272,9 @@ class AH_Asteroid extends HTMLDivElement {
     this.classList.add("game");
     this.classList.add("asteroid");
 
+    // Cette propriété est nécessaire pour régler la hitbox des visuels qui ne sont pas des disques parfaits
+    this.hitbox_size_coef = AST_HITBOX_RADIUS_COEF;
+
     // Génération des caractéristiques de départ
     this.init(size, x, y);
 
@@ -259,11 +292,16 @@ class AH_Asteroid extends HTMLDivElement {
     this.style.width = pixel_size + "px";
     this.style.height = pixel_size + "px";
 
+    // Si le paramétrage du jeu le spécifie, on affiche la HitBox => aide visuelle au paramétrage
+    if (AH_MainController.scope.game.showHitboxes)
+      ah_addHitBox(this, pixel_size);
+
     // Si les coordonnées sont passées en paramètre, on les initialise sinon c'est aléatoire
     if (x != undefined && y != undefined) {
       this.x = x;
       this.y = y;
     } else {
+      //--------- GESTION DU RANDOM SPOT DE DEBUT DE VAGUE ----------
       // Les astéroïdes apparaissent sur des bandes de 100px de chaque côté de l'écran
       // La position sur ces bandes est aléatoire : 0 < x < 200. Si 0 < x < 100 => gauche, sinon droite.
       // Ces cooredonnées représentent le milieu des astéroïdes. Il faut donc en déduire les propriétés left et top.
@@ -276,6 +314,10 @@ class AH_Asteroid extends HTMLDivElement {
              : x - (pixel_size / 2) + AST_SPAWN_ZONE_WIDTH + (WINDOW_WIDTH - (AST_SPAWN_ZONE_WIDTH * 2));
       this.y = y - (pixel_size / 2);
     }
+
+    // Application de la rotation aléatoire, de la vie et des aspects graphiques liés aux corrdonnées afin d'éviter les collisions ramdom lors du pop
+    this.style.top = this.y + "px";
+    this.style.left = this.x + "px";
     this.deltaX = AH_MainController.reelAleatoire(AST_MAX_INITIAL_AXIAL_SPEED) - (AST_MAX_INITIAL_AXIAL_SPEED / 2);
     this.deltaY = AH_MainController.reelAleatoire(AST_MAX_INITIAL_AXIAL_SPEED) - (AST_MAX_INITIAL_AXIAL_SPEED / 2);
     this.display_angle = AH_MainController.reelAleatoire(360);
