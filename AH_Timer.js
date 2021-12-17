@@ -94,27 +94,43 @@ class AH_Timer {
 	
 	/**
 	 * Fonction permettant de tester la collision entre deux élément HTML positionnés en absolu
-	 * La hitbox est un disque dont le rayon est la largeur de l'élément
+	 * La hitbox est un disque dont le rayon est la largeur de l'élément 
+	 * (multiplié par hitbox_size_coef si la propriété existe sur l'élément)
 	 * 
-	 * => Ne fonctionne parfaitement que sur des éléments parfaitement carés (ou ronds, idéalement)
+	 * => Ne fonctionne parfaitement que sur des éléments parfaitement carés (largeur = hauteur)
 	 */
 	static testCollideSquareElements(element1, element2) {
-		// Coordonnées du centre des éléments
-		let box1 = element1.getBoundingClientRect();
-		let size1 = box1.width;
-		let radius_coef1 = Object.hasOwnProperty(element1, "hitbox_size_coef") ? element1.hitbox_size_coef : 1;
-		let x1 = box1.left + (box1.width / 2);
-		let y1 = box1.top + (box1.height / 2);
-		let box2 = element2.getBoundingClientRect();
-		let size2 = box2.width;
-		let radius_coef2 = Object.hasOwnProperty(element2, "hitbox_size_coef") ? element2.hitbox_size_coef : 1;
-		let x2 = box2.left + (box2.width / 2);
-		let y2 = box2.top + (box2.height / 2);
+		let infos1 = AH_Timer.getElementPositionnalInfos(element1);
+		let infos2 = AH_Timer.getElementPositionnalInfos(element2);
+		let deltaX = Math.abs(infos1.x - infos2.x),
+			deltaY = Math.abs(infos1.y - infos2.y),
+			distance = (deltaX**2 + deltaY**2) ** 0.5;
 
-		// Récupération de la distance entre les centres, via le théorème de Pythagore 
-		//=> si les disques se chevauchent, on retourne vrai.
-		return Math.pow(Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2), 0.5) 
-					< (size1*radius_coef1/2) + (size2*radius_coef2/2);
+		// Si la distance entre les centres des deux disques est inférieure à la somme de leurs rayons, c'est qu'ils se chevauchent
+		return (distance < infos1.hitbox_radius+infos2.hitbox_radius);
+	}
+
+	/**
+	 * Retourne les informations positionnelles de l'élément HTML ciblé
+	 * Utilisé dans les tests de collision
+	 */
+	static getElementPositionnalInfos(element) {
+
+		// Les composants susceptibles de tourner se voient affecter une propriété "pixel_size" 
+		//pour éviter d'avoir à compenser par calcul les débordements induits par la rotation
+		let size = element.pixel_size;
+		if (!size) {
+			let box = element.getBoundingClientRect();
+			size = box.width;
+		}
+		let radius_coef = element.hitbox_size_coef || 1;
+		
+		// On retourne un objet donnant le coef à appliquer à la taille 
+		return {
+			hitbox_radius: size/2 * radius_coef,
+			x: element.x + (size / 2),
+			y: element.y + (size / 2)
+		};
 	}
 }
 
