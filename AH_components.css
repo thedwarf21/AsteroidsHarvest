@@ -37,6 +37,14 @@
 	position: absolute;
 }
 
+/**********
+ * Hitbox *
+ **********/
+.hitbox {
+	background: radial-gradient(circle at center, black 0%, rgba(255,255,255,0.6) 1%, rgba(255,255,255,0.6) 99%, white 100%);
+	border-radius: 50%;
+}
+
 /*********
  * Bonus *
  *********/
@@ -76,7 +84,7 @@
  * Clignotement *
  ****************/
 .blink {
-	animation: blink-animation 1s steps(5, start) infinite;
-	-webkit-animation: blink-animation 1s steps(5, start) infinite;
+	animation: blink-animation 0.5s steps(5, start) infinite;
+	-webkit-animation: blink-animation 0.5s steps(5, start) infinite;
 }
-@keyframes blink-animation { to { visibility: hidden; } }
+@keyframes blink-animation { to { opacity: 0.3; } }
