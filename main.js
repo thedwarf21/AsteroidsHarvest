@@ -2,11 +2,6 @@
 //  - ANGLE_STEP => paramétrable via un curseur "sensibilité radiale" et pris en compte par la sauvegarde
 //  - Barre de vie des astéroïdes
 //  - Gérer l'affichage humain dans le récap'
-//  - Hitbox du vaisseau et des asteroïdes perfectibles => mettre en place un paramétrage permettant d'afficher les hitbox le temps de faire les réglages
-//      /\
-//     /  \
-//  - / !! \ 	BUG => Quand un astéroïde explose et se scinde en plusieurs autres plus petits, il arrive que le pop se produise
-//   /______\         	ailleurs qu'aux corrdonnées de l'explosion, avant de se placer correctement => perte random surper agaçante !!
 
 // Constantes
 const TIME_INTERVAL = 50;
