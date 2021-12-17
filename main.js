@@ -1,5 +1,12 @@
 // Liste des choses à faire (par priorité croissante => faire la dernière en premier):
 //  - ANGLE_STEP => paramétrable via un curseur "sensibilité radiale" et pris en compte par la sauvegarde
+//  - Barre de vie des astéroïdes
+//  - Gérer l'affichage humain dans le récap'
+//  - Hitbox du vaisseau et des asteroïdes perfectibles => mettre en place un paramétrage permettant d'afficher les hitbox le temps de faire les réglages
+//      /\
+//     /  \
+//  - / !! \ 	BUG => Quand un astéroïde explose et se scinde en plusieurs autres plus petits, il arrive que le pop se produise
+//   /______\         	ailleurs qu'aux corrdonnées de l'explosion, avant de se placer correctement => perte random surper agaçante !!
 
 // Constantes
 const TIME_INTERVAL = 50;
@@ -10,10 +17,15 @@ const WINDOW_WIDTH = 800;
 const WINDOW_HEIGHT = 600;
 
 const SPACESHIP_SIZE = 50;
-const SPACESHIP_HITBOX_RADIUS_COEF = 0.5;
 const SHOT_BASE_SIZE = 5;
 const BASE_AST_SIZE = 15;
 const BONUS_SIZE = 25;
+
+// La hitbox est un disque: les valeurs de ces constantes sont à adapter en fonction des image utilisés
+// Le disque a pour rayon la largeur de l'élément HTML (qui est carré)
+// => pour une jouabilité optimale la hitbox ne doit pas sortir de l'image
+const SPACESHIP_HITBOX_RADIUS_COEF = 0.6;
+const AST_HITBOX_RADIUS_COEF = 0.8;
 
 const MONEY_PER_BONUS = 100;
 const BONUS_MAX_SPEED = 8;  		// Vitesse max en pixel par intervalle, PAR AXE
@@ -53,7 +65,8 @@ class AH_MainController {
 				level: 1,
 				beforeNextShot: 0,
 				tinyAstDestroyed: 0,
-				bonusCollected: 0
+				bonusCollected: 0,
+				showHitboxes: false
 			},
 			controls: {
 				upPressed: false,
@@ -346,7 +359,7 @@ class AH_MainController {
 		AH_MainController.getReportLine("Bonus", ["<b>Collectés:</b>", bonus_collected, "<b>Gains:</b>", bonus_income + " Brouzoufs"], div_content);
 		AH_MainController.getReportLine("Petits astéroïdes", ["<b>Détruits:</b>", tiny_ast_destroyed, "<b>Gains:</b>", tiny_ast_income + " Brouzoufs"], div_content);
 		if (level_failed)
-			AH_MainController.getReportLine("Pertes", ["<b>Non récupérés:</b>", `${(1 - AH_Shop.getShopAttributeValue("REC")) * 100}%`], div_content);
+			AH_MainController.getReportLine("Pertes", ["<b>Non récupérés:</b>", `${Math.round((1 - AH_Shop.getShopAttributeValue("REC")) * 100)}%`], div_content);
 
 		// Total
 		let total_income = level_failed
