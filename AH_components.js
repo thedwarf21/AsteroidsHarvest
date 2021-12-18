@@ -128,7 +128,7 @@ class AH_Spaceship extends HTMLDivElement {
     this.classList.add("explosion");
     setTimeout(()=> {
       this.init();
-      AH_MainController.getWaveIncomesReport(true);
+      AH_MainController.showWaveIncomesReport(true);
     }, 450);
   }
 }
@@ -278,10 +278,41 @@ class AH_Asteroid extends HTMLDivElement {
     // Génération des caractéristiques de départ
     this.init(size, x, y);
 
+    // Ajout de la barre de vie
+    // La fonction à besoin de this.pixel_size (initialisé dans this.init()), 
+    // il est donc important que l'appel à createLifeBar() soit effectué après this.init()
+    this.createLifeBar();
+
     // Intégration au DOM ainsi qu'au scope du controller principal
     AH_MainController.addToGameWindow(this);
     AH_MainController.scope.asteroids.push(this);
   }
+
+  /*****************************************
+   * Ajoute une barre de vie à l'astéroïde *
+   *****************************************/
+  createLifeBar() {
+    
+    // Barre de vie en elle-même
+    this.life_bar = document.createElement("DIV");
+    this.life_bar.classList.add("life-bar");
+    this.life_bar.classList.add("game");
+    this.life_bar.style.width = this.pixel_size + "px";
+    
+    // Partie colorée de la barre de vie
+    this.life_ink = document.createElement("DIV");
+    this.life_ink.classList.add("life-ink");
+    this.life_ink.style.width = (this.health / this.max_health * 100) + "%";
+    this.life_bar.appendChild(this.life_ink);
+    
+    // Affichage
+    AH_MainController.addToGameWindow(this.life_bar);
+  }
+
+  /**************************************************************
+   * Réajuste la taille de la partie colorée de la barre de vie *
+   **************************************************************/
+  refreshLifeBar() { this.life_ink.style.width = (this.health / this.max_health * 100) + "%"; }
 
   /*****************************
    * Fonction d'initialisation *
@@ -324,7 +355,7 @@ class AH_Asteroid extends HTMLDivElement {
     this.radial_speed = AH_MainController.reelAleatoire(1 / AST_RADIAL_SPEED_DIVIDER) - (0.5 / AST_RADIAL_SPEED_DIVIDER);
     this.pixel_size = pixel_size;
     this.size = size;
-    this.maxHealth = BASE_AST_LIFE * size;
+    this.max_health = BASE_AST_LIFE * size;
     this.health = BASE_AST_LIFE * size;
   }
 
@@ -353,6 +384,8 @@ class AH_Asteroid extends HTMLDivElement {
     if (this.display_angle < 0) this.display_angle += 360;
 
     // Application des nouvelles coordonnées et de l'angle
+    this.life_bar.style.top = this.y + "px";
+    this.life_bar.style.left = this.x + "px";
     this.style.top = this.y + "px";
     this.style.left = this.x + "px";
     this.style.transform = "rotateZ(" + this.display_angle + "deg)";
@@ -365,9 +398,11 @@ class AH_Asteroid extends HTMLDivElement {
     this.health -= power;
 
     // Si la vie tombe à ou sous 0 => explosion, sinon on applique les modifications inertielles
-    if (this.health <= 0)
+    if (this.health <= 0) {
+      this.life_bar.remove();
       this.explode();
-    else {
+    } else {
+      this.refreshLifeBar();
       this.deltaX += Math.sin(angle_rad) * power;
       this.deltaY += Math.cos(angle_rad) * power;
       this.radial_speed += AH_MainController.reelAleatoire(1 / AST_RADIAL_SPEED_DIVIDER) - (0.5 * AST_RADIAL_SPEED_DIVIDER) * power;

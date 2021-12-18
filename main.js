@@ -1,7 +1,36 @@
+// Liste des idées d'amélioration:
+//  	
+//  - Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
+//  	* En profiter pour demander à l'utilisateur s'il choisit d'accepter les cookies (ce qui évitera de le demader à chaque sauvegarde)	
+//  	
+//  - Mettre en place une introduction, présentant le pitch:
+//  	* Trouver un illustrateur (pour le pitch c'est mieux ^^)
+//  	* Dans un premier temps, un écran titre serait suffisant
+// 
+//  - Mettre en place un second mode de jeu "Arcade", le mode de jeu d'origine serait bâptisé "Mode Infini":
+//  	* Pitch (alternative du pitch d'origine):
+//  			Une armée d'aliens belliqueux prend en chasse le StarShip Hope. Malheureusement, les réserves de minerais 
+//  		sont insuffisantes pour quitter la zone.
+//  		
+//  			En désespoir de cause, le StarShip Hope s'enfonce dans une ceinture d'astéroïdes pour tenter de perdre 
+//  		l'assaillant tout en reconstituant son stock de minerais afin de s'éloigner au plus vite de la menace.
+//  	* Ce qui change:
+//  		Les vagues deviennent des jours
+//  		Après un jour, on passe au jour suivant, même en cas de crash => toujours plus d'astéroïdes
+//  		Niveau final avec un boss de fin, à un "jour du jeu" donné (ce pourrait être 10, par exemple)
+//  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
+//  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
+
+/**
+ * EN COURS:
+ *   Rendre ANGLE_STEP paramétrable via un curseur "sensibilité radiale"
+ *   Un bouton et une popup paramètres seront réalisés dans ce cadre
+ *   => Evolution de RS_Dialog afin de permettre de créer une popup à partir d'un template HTML et migrer toutes les popups sur ce concept (clarté du code)
+ *   Gérer un coef "sensivity" dans "scope.game" et dans "AH_Timer.applyControls()"
+ */
+
 // Liste des choses à faire (par priorité croissante => faire la dernière en premier):
-//  - ANGLE_STEP => paramétrable via un curseur "sensibilité radiale" et pris en compte par la sauvegarde
-//  - Barre de vie des astéroïdes
-//  - Gérer l'affichage humain dans le récap'
+//  - 
 
 // Constantes
 const TIME_INTERVAL = 50;
@@ -18,7 +47,7 @@ const BONUS_SIZE = 25;
 
 // La hitbox est un disque: les valeurs de ces constantes sont à adapter en fonction des image utilisés
 // Le disque a pour rayon la largeur de l'élément HTML (qui est carré)
-// => pour une jouabilité optimale la hitbox ne doit pas sortir de l'image
+// => pour un rendu optimal, la hitbox ne doit pas trop déborder de l'image et inversement
 const SPACESHIP_HITBOX_RADIUS_COEF = 0.6;
 const AST_HITBOX_RADIUS_COEF = 0.8;
 
@@ -194,6 +223,7 @@ class AH_MainController {
 		// Clear des astéroïdes, des tirs et des bonus restant de la défaite précédente
 		while (AH_MainController.scope.asteroids.length > 0) {
 			let asteroid = AH_MainController.scope.asteroids.pop();
+			asteroid.life_bar.remove();
 			asteroid.remove();
 		}
 		let shots = document.getElementsByClassName("shot");
@@ -253,7 +283,7 @@ class AH_MainController {
 	static checkLevelEnd() {
 		if (AH_MainController.scope.asteroids.length == 0) {
 			AH_MainController.scope.game.level++;
-			AH_MainController.getWaveIncomesReport();
+			AH_MainController.showWaveIncomesReport();
 		}
 	}
 
@@ -327,7 +357,7 @@ class AH_MainController {
 	 * Fonction générant la boîte de dialogue présentant le détail des gains
 	 * level_failed  boolean  permet de savoir si l'application du coef de lose est pertinent
 	 */
-	static getWaveIncomesReport(level_failed) {
+	static showWaveIncomesReport(level_failed) {
 		AH_MainController.scope.controls.paused = true;
 		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false);
 
@@ -351,8 +381,8 @@ class AH_MainController {
 		let tiny_ast_income = income_shop_level * tiny_ast_destroyed;
 
 		// Génération des lignes de rapport
-		AH_MainController.getReportLine("Bonus", ["<b>Collectés:</b>", bonus_collected, "<b>Gains:</b>", bonus_income + " Brouzoufs"], div_content);
-		AH_MainController.getReportLine("Petits astéroïdes", ["<b>Détruits:</b>", tiny_ast_destroyed, "<b>Gains:</b>", tiny_ast_income + " Brouzoufs"], div_content);
+		AH_MainController.getReportLine("Bonus", ["<b>Collectés:</b>", bonus_collected, "<b>Gains:</b>", AH_MainController.intToHumanReadableString(bonus_income) + " Brouzoufs"], div_content);
+		AH_MainController.getReportLine("Petits astéroïdes", ["<b>Détruits:</b>", tiny_ast_destroyed, "<b>Gains:</b>", AH_MainController.intToHumanReadableString(tiny_ast_income) + " Brouzoufs"], div_content);
 		if (level_failed)
 			AH_MainController.getReportLine("Pertes", ["<b>Non récupérés:</b>", `${Math.round((1 - AH_Shop.getShopAttributeValue("REC")) * 100)}%`], div_content);
 
@@ -363,14 +393,14 @@ class AH_MainController {
 		let divTotal = document.createElement("DIV");
 		divTotal.classList.add("report-total");
 		divTotal.classList.add("report-text");
-		divTotal.innerHTML = "<b>Total:</b> " + total_income + " Brouzoufs";
+		divTotal.innerHTML = "<b>Total:</b> " + AH_MainController.intToHumanReadableString(total_income) + " Brouzoufs";
 		div_content.appendChild(divTotal);
 
 		// Création de la <div> contenant les boutons
 		let div_btn = document.createElement("DIV");
 		div_btn.classList.add("dialog-footer");
 
-		// Création du bouton "Oui"
+		// Création du bouton de fermeture
 		let btn = document.createElement("INPUT");
 		btn.setAttribute("type", "button");
 		btn.classList.add("start-wave-button");
@@ -411,5 +441,39 @@ class AH_MainController {
 			ligne.appendChild(cell);
 			index++;
 		}
+	}
+
+	/**
+	 * Affiche la popup de réglage des paramètres
+	 */
+	static showParameters() {
+		AH_MainController.scope.controls.paused = true;
+		/*let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false);
+
+		// Ajout de la div de contenu de la popup
+		let div_content = document.createElement("DIV");
+		div_content.classList.add("dialog-body");
+		popup.appendToContent(div_content);
+
+		
+
+		// Création de la <div> contenant les boutons
+		let div_btn = document.createElement("DIV");
+		div_btn.classList.add("dialog-footer");
+
+		// Création du bouton de fermeture
+		let btn = document.createElement("INPUT");
+		btn.setAttribute("type", "button");
+		btn.classList.add("start-wave-button");
+		btn.value = "Bien reçu";
+		btn.addEventListener("click", ()=> {
+			popup.closeModal();
+			setTimeout(function () { AH_Shop.show(); }, 750);
+		});
+
+		// Ajout des boutons à la boîte de dialogue et affichage
+		div_btn.appendChild(btn);
+		popup.appendToContent(div_btn);
+		document.body.appendChild(popup);*/
 	}
 }

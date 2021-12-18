@@ -18,6 +18,11 @@ body { margin: 0; }
 .panel-ns {
 	width: 100%;
 	height: calc(50% - 300px);
+	
+	/* Pour placement du bouton paramètres */
+	display: flex;
+	flex-direction: row;
+	justify-content: end;
 }
 .panel-we {
 	height: 600px;
@@ -190,6 +195,19 @@ input.start-wave-button:active {
 }
 .save, .rs-btn-suppr { background: linear-gradient(to bottom, red, #ff5400); }
 .load, .rs-btn-create { background: linear-gradient(to bottom, #1a4800, #399d00); }
+.paramters {
+	height: 60px;
+	width: 60px;
+	margin-right: 10px;
+	margin-top: 10px;
+	background: linear-gradient(to bottom, #5e84bf, #78a0b9);
+	border: none;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
 
 /**
  * Rapport de fin de vague

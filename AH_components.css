@@ -28,13 +28,26 @@
 	position: absolute;
 }
 
-/*************
- * Astéroïde *
- *************/
+/*****************************
+ * Astéroïde et barre de vie *
+ *****************************/
 .asteroid {
 	background-image: url('asteroide.png');
 	background-size: 100% 100%;
 	position: absolute;
+}
+.life-bar {
+	box-shadow: 0 0 3px rgb(255 255 255 / 50%);
+	background-color: transparent;
+	text-align: left;
+	height: 5px;
+	position: absolute;
+	transform: translateY(-10px);
+}
+.life-bar .life-ink {
+	height: 100%;
+	background-color: red;
+	box-shadow: 1px 0 darkred;
 }
 
 /**********
@@ -87,4 +100,4 @@
 	animation: blink-animation 0.5s steps(5, start) infinite;
 	-webkit-animation: blink-animation 0.5s steps(5, start) infinite;
 }
-@keyframes blink-animation { to { opacity: 0.3; } }
+@keyframes blink-animation { to { opacity: 30%; } }
