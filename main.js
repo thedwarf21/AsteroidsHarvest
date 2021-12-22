@@ -363,7 +363,6 @@ class AH_MainController {
 		if (startIndex != -1) {
 			let cookieContent = cookie.substring(startIndex, (endIndex == -1 ? undefined : endIndex));
 			let saved_game = JSON.parse(cookieContent);
-			console.log(saved_game);
 			AH_MainController.scope.game.money = saved_game.money;
 			AH_MainController.scope.game.level = saved_game.level;
 			AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
