@@ -23,22 +23,27 @@
 //  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
 //  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
 // 
-//------------------------------------------ Optimisations, maintenabilité et scallabilité ------------------------------------------ 
-//
-//  - Création d'un fichier RS_GameEngine regroupant les fonctions factorisables liés au moteur de jeu,
-//   notamment une classe RSGE_Hitbox portant:
-//   	* la forme de la hitbox (valeur numérique définie par constante statique - impossible en javascript mais...)
-//   			=> déclaration: 	static get NOM_CONSTANTE() { return 42; }
-//   			   accès:      		RSGE_Hitbox.NOM_CONSTANTE  // sortie: 42
-//   			=> accès en lecture, comme pour une constante => objectif atteint
-//   	* les paramètres liés à la forme (rayon et coordonnées du centre pour le cercle, par exemple)
-//   	* une fonction checkCollide(RSGE_Hitbox hitbox)
-//   => Les composants devront implémenter une méthode getHitbox() retournant un objet de type RSGE_Hitbox
-//   => La fonction testant toutes les collision dans AH_Timer(), utilisera les fonctions getHitbox() des composants 
-//     et checkCollide() des hitbox ainsi obtenues pour tester les collisions
+//------------------------------------------ Optimisations, maintenabilité et scallabilité ------------------------------------------
+// 
+//  Rien de prévu ... pour le moment ;) 
 
 /**
- * EN COURS:
+ * Modifications apportées dans le dernier patch:
+ *   - Ajout de la possibilité d'afficher les hitbox via les préférences utilisateur
+ *   - Correction de bug: la pause ne s'enlevait pas, à la fermeture d'une fenêtre des paramètres ouverte en cours de niveau
+ *   - Abandon du <ah-sapaceship> en tant que composant HTML utilisable dans les templates: complique les choses inutilement
+ *   - Abandon de scope.asteroids et scope.bonuses pour la même raison 
+ *   		=> mise en place d'accesseurs pour les éléments du jeu, au sein de AH_MainController
+ *   - Création de la classe RS_Hitbox dévolue aux tests de collision
+ *   - Création de la classe MobileGameElement => classe mère de tous les éléments mobiles du jeu
+ *   	* Embarque le code commun à tous les composants: 
+ *   		# placements et déplacements générique
+ *   		# explosion générique
+ *   		# génération de l'objet RS_Hitbox correspondant à this
+ *   		
+ * Les quatre derniers points étant de la "mise au propre" du code: 
+ * Ce genre d'opération est chronophage sur le moment, mais ce temps investi est vite amorti 
+ * (gain de temps et d'énergie sur les corrections de bugs et évolutions) 
  */
 
 // Constantes
@@ -90,15 +95,16 @@ var debug = false;
  */
 class AH_MainController {
 
+	// Accesseurs permettant d'accéder aux éléments du jeu
+	static get spaceship() 	{ return document.getElementsByClassName("spaceship")[0]; }
+	static get asteroids() 	{ return document.getElementsByClassName("asteroid"); }
+	static get shots() 		{ return document.getElementsByClassName("shot"); }
+	static get bonusItems()	{ return document.getElementsByClassName("bonus"); }
+
 	// Fonction d'initialisation du controller principal
 	static init() {
 		document.currentController = AH_MainController;
 		AH_MainController.scope = {
-			spaceship: {
-				angle: 0,
-				deltaX: 0,
-				deltaY: 0
-			},
 			asteroids: [],
 			bonusItems: [],
 			game: {
@@ -235,27 +241,35 @@ class AH_MainController {
 	}
 
 	/**
-	 * Fonction démarrant la vague suivante
+	 * Fonction remettant l'affichage à 0
 	 */
-	static startWave() {
-
-		// Clear des astéroïdes, des tirs et des bonus restant de la défaite précédente
-		while (AH_MainController.scope.asteroids.length > 0) {
-			let asteroid = AH_MainController.scope.asteroids.pop();
-			asteroid.life_bar.remove();
-			asteroid.remove();
+	static clearGameWindow() {
+		let spaceship = AH_MainController.spaceship;
+		if (spaceship)
+			spaceship.remove();
+		let asteroids = AH_MainController.asteroids;
+		for (let i=asteroids.length-1; i>=0; i--) {
+			let ast = asteroids[i];
+			ast.life_bar.remove();
+			ast.remove();
 		}
-		let shots = document.getElementsByClassName("shot");
+		let shots = AH_MainController.shots;
 		for (let i=shots.length-1; i>=0; i--) {
 			let shot = shots[i];
 			shot.remove();
 		}
-		let bonusItems = AH_MainController.scope.bonusItems; 
+		let bonusItems = AH_MainController.bonusItems; 
 		for (let i=bonusItems.length-1; i>=0; i--) {
 			let bonus = bonusItems[i];
 			bonus.remove();
-			bonusItems.splice(i, 1);
 		}
+	}
+
+	/**
+	 * Fonction démarrant la vague suivante
+	 */
+	static startWave() {
+		AH_MainController.clearGameWindow();
 
 		// Créer les astéroïdes correspondant au niveau (Lvl)
 		// ast. taille FIRST_ENCOUNTER_SIZE -> Lvl % SIZE_COMPUTE_BASE
@@ -279,8 +293,8 @@ class AH_MainController {
 			sizeUpgrade++;
 		} while (level > 0); 
 
-		// Repositionner le vaisseau au milieu
-		document.getElementsByTagName("AH-SPACESHIP")[0].init();
+		// Création du vaisseau initialisé par défaut (centré et immobile)
+		AH_MainController.addToGameWindow(new AH_Spaceship());
 
 		// Réinitialiser les compteurs puis démarrer le jeu
 		AH_MainController.scope.game.tinyAstDestroyed = 0;
@@ -300,7 +314,7 @@ class AH_MainController {
 	 * ==> à appeler lors de la destruction d'un astéroïde 
 	 */
 	static checkLevelEnd() {
-		if (AH_MainController.scope.asteroids.length == 0) {
+		if (AH_MainController.asteroids.length == 0) {
 			AH_MainController.scope.game.level++;
 			AH_MainController.showWaveIncomesReport();
 		}
@@ -319,7 +333,8 @@ class AH_MainController {
 				money: AH_MainController.scope.game.money,
 				level: AH_MainController.scope.game.level,
 				shop: [],
-				radial_sensivity: AH_MainController.scope.game.radial_sensivity
+				radial_sensivity: AH_MainController.scope.game.radial_sensivity,
+				show_hitboxes: AH_MainController.scope.game.showHitboxes
 			}
 			for (let shopElem of AH_MainController.scope.shop) {
 				object.shop.push({
@@ -351,6 +366,7 @@ class AH_MainController {
 			AH_MainController.scope.game.money = saved_game.money;
 			AH_MainController.scope.game.level = saved_game.level;
 			AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
+			AH_MainController.scope.game.showHitboxes = saved_game.show_hitboxes;
 			AH_MainController.scope.game.cookies_accepted = true;
 			for (let savedShopElem of saved_game.shop)
 				AH_Shop.setShopItemLevel(savedShopElem.code, savedShopElem.level);
@@ -427,6 +443,7 @@ class AH_MainController {
 	 * Affiche la popup de réglage des paramètres
 	 */
 	static showParameters() {
+		let was_paused = AH_MainController.scope.controls.paused;
 		AH_MainController.scope.controls.paused = true;
 		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false, "tpl_parameters.html", function() {
 
@@ -435,6 +452,12 @@ class AH_MainController {
 				object: AH_MainController.scope.game,
 				property: "cookies_accepted"
 			}).addBinding(popup.querySelector("#cookies_accepted"), "checked", "change");
+
+			// Binding affichage des hitbox
+			new RS_Binding({
+				object: AH_MainController.scope.game,
+				property: "showHitboxes"
+			}).addBinding(popup.querySelector("#show_hitboxes"), "checked", "change");
 
 			// Binding de la sensibilité radiale
 			new RS_Binding({
@@ -445,7 +468,11 @@ class AH_MainController {
 			// Gestion du clic sur les boutons de sauvegarde et de chargement
 			popup.querySelector("#btn_save").addEventListener("click", ()=> { AH_MainController.saveGame(); });
 			popup.querySelector("#btn_load").addEventListener("click", ()=> { AH_MainController.loadGame(); });
-			popup.querySelector("#btn_close").addEventListener("click", ()=> { popup.closeModal(); });
+			popup.querySelector("#btn_close").addEventListener("click", ()=> {
+				popup.closeModal();
+				if (!was_paused)
+					AH_MainController.scope.controls.paused = false;
+			});
 		});
 		document.body.appendChild(popup);
 	}

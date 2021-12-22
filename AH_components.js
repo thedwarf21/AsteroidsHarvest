@@ -1,22 +1,123 @@
 /**
- * Ajoute une div affichant la hitbox, à _customElement_
- *
- * @param      {HTMLElement}  customElement  Le composant de jeu dont vous souhaitez voir la hitbox
- * @param      {number}       pxElementSize  La taille (côté du carré) de la box de l'élément HTML correspondant
+ * Classe mère des éléments mobiles du jeu (tirs, vaisseau, astéroïdes et bonus)
  */
-function ah_addHitBox(customElement, pxElementSize) {
-  let div = document.createElement("DIV");
-  div.classList.add("hitbox");
+class MobileGameElement extends HTMLDivElement {
 
-  // On applique le coefficient pour obtenir la marge 
-  // marge de centrage => réduction du rayon = <rayon_hitbox_de_base> - <rayon_hitbox_souhaité>
-  let margin = pxElementSize/2 * (1 - customElement.hitbox_size_coef);
-  let cssSize = `calc(100% - ${margin * 2}px)`;
-  div.style.margin = `${margin}px`;
-  div.style.height = cssSize;
-  div.style.width = cssSize;
-  customElement.appendChild(div);
+  /*** Propriétés devant être initialisés pour que l'objet fonctionne correctement ***/
+  x                 = null;
+  y                 = null;
+  deltaX            = null;
+  deltaY            = null;
+  pixel_size        = null;
+
+  /**
+   * Constructeur par défaut de tous les composants mobiles du jeu (tirs, vaisseau, astéroïdes et bonus)
+   * Les coordonnées passées en paramètre sont les coordonnées d'apparition
+   *
+   * @param      {number}  x       Optionnel: Abscisses en pixels du coin supérieur gauche de l'élément contenant l'image du vaisseau
+   * @param      {number}  y       Optionnel: Ordonnées en pixels du coin supérieur gauche de l'élément contenant l'image du vaisseau
+   */
+  constructor(x, y) {
+    super();
+    this.classList.add("game");
+
+    // Certains éléments initialisent eux-mêmes leurs coordonnées. Les paramètres peuvent donc être absents.
+    if (x != undefined && y != undefined) {
+      this.x = x;
+      this.y = y;
+      this.style.left = this.x + "px";
+      this.style.top = this.y + "px";
+    }
+  }
+
+  /**
+   * Fonction de déplacement de base
+   *
+   * @param      {boolean}  removeOnScreenLeave  move(true) => à sa sortie de l'écran, l'élément est supprimé du DOM
+   */
+  move(removeOnScreenLeave) {
+
+    // Calcul des nouvelles coordonnées
+    this.y -= this.deltaY;
+    this.x += this.deltaX;
+    
+    // Gestion de la sortie d'écran selon removeOnScreenLeave
+    //--------------------------------------------------------
+    // true  --> suppression de l'élément
+    // false --> on ramène l'élément au bord opposé
+    if (removeOnScreenLeave) {
+      let shot_size = SHOT_BASE_SIZE * this.power;
+      if (this.y > WINDOW_HEIGHT || this.y < -shot_size || this.x > WINDOW_WIDTH || this.x < -shot_size) 
+        this.remove();
+    } else {
+      if (this.y > WINDOW_HEIGHT) 
+        this.y -= (WINDOW_HEIGHT + this.pixel_size);
+      if (this.y < -this.pixel_size) 
+        this.y += (WINDOW_HEIGHT + this.pixel_size);
+      if (this.x > WINDOW_WIDTH) 
+        this.x -= (WINDOW_WIDTH + this.pixel_size);
+      if (this.x < -this.pixel_size) 
+        this.x += (WINDOW_WIDTH + this.pixel_size);
+    }
+
+    // Application des nouvelles coordonnées
+    this.style.top = this.y + "px";
+    this.style.left = this.x + "px";
+  }
+
+  /**
+   * Fonction déclenchant l'animation d'explosion sur un élément
+   *
+   * @param      {function}  fnPostExplosion  Hook post-animation
+   */
+  explode(fnPostExplosion) {
+    this.classList.add("explosion");
+    if (typeof fnPostExplosion == "function")
+      setTimeout(fnPostExplosion, 450);
+  }
+
+  /**
+   * Ajoute un élément permettant de visualiser la hitbox de l'élément
+   */
+  addVisualHitBox() {
+    let div = document.createElement("DIV");
+    div.classList.add("hitbox");
+
+    // On applique le coefficient pour obtenir la marge 
+    // marge de centrage => réduction du rayon = <rayon_hitbox_de_base> - <rayon_hitbox_souhaité>
+    let margin = this.hitbox_size_coef
+               ? this.pixel_size/2 * (1 - this.hitbox_size_coef)
+               : this.pixel_size/2;
+    let cssSize = `calc(100% - ${margin * 2}px)`;
+    div.style.margin = `${margin}px`;
+    div.style.height = cssSize;
+    div.style.width = cssSize;
+    this.appendChild(div);
+  }
+
+  /**
+   * Retourne l'objet RS_Hitbox correspondant au vaisseau
+   *
+   * @type       {RS_Hitbox}
+   */
+  get hitbox() {
+    let radius_coef = this.hitbox_size_coef || 1;
+    
+    // On retourne un objet donnant le coef à appliquer à la taille 
+    return new RS_Hitbox(RS_Hitbox.SHAPE_CIRCLE, {
+      radius: this.pixel_size/2 * radius_coef,
+      x: this.x + (this.pixel_size / 2),
+      y: this.y + (this.pixel_size / 2)
+    });
+  }
+
+  /**
+   * Ecrit un message d'erreur dans la console: propriété en lecture seule
+   * Ce qui peut éviter d'un jour chercher pendant 3h pourquoi ça ne fonctionne pas...
+   */
+  set hitbox(value) { console.error("La propriété hitbox de MobileGameElement est en lecture seule."); }
 }
+customElements.define('ah-js-mobile-element', MobileGameElement, { extends: 'div' });
 
 //---------------------------------------------------------------------------------------------------
 //                                 Vaisseau du joueur
@@ -27,79 +128,54 @@ function ah_addHitBox(customElement, pxElementSize) {
 // Dans le DOM ==> <div class="game spaceship"></div>, si créé directement via la classe AH_Spaceship
 //---------------------------------------------------------------------------------------------------
 /* Usage JS uniquement */
-class AH_Spaceship extends HTMLDivElement {
+class AH_Spaceship extends MobileGameElement {
 
   /***********************************************************************
    * Construction du vaisseau                                            *
-   ***********************************************************************
-   * @param  | {string}  | rs_model  | Binding                           *
    ***********************************************************************/
-  constructor(rs_model) {
+  constructor() {
 
     // Construction HTML
     super();
-    this.classList.add("game");
     this.classList.add("spaceship");
-
-    // Si le rs_model est renseigné, on initialise la valeur avec celle pointée par rs_model
-    if (rs_model) {
-      let [target_obj, property] = RS_Binding.getObjectAndPropertyNameFromModel(rs_model);
-      this.params = target_obj[property];
-    }
 
     // Cette propriété est nécessaire pour régler la hitbox des visuels qui ne sont pas des disques parfaits
     this.hitbox_size_coef = SPACESHIP_HITBOX_RADIUS_COEF;
 
-    // Si le paramétrage du jeu le spécifie, on affiche la HitBox => aide visuelle au paramétrage
-    if (AH_MainController.scope.game.showHitboxes)
-      ah_addHitBox(this, SPACESHIP_SIZE);
-
     // Position initiale, au centre de la scène
     this.init();
-
   }
 
   /*****************************
    * Fonction d'initialisation *
    *****************************/
   init() {
-    this.params.angle = 0;
-    this.params.deltaX = 0;
-    this.params.deltaY = 0;
-    this.x = (WINDOW_WIDTH - SPACESHIP_SIZE) / 2;
-    this.y = (WINDOW_HEIGHT - SPACESHIP_SIZE) / 2;
+    this.angle = 0;
+    this.deltaX = 0;
+    this.deltaY = 0;
     this.pixel_size = SPACESHIP_SIZE;
+    this.x = (WINDOW_WIDTH - this.pixel_size) / 2;
+    this.y = (WINDOW_HEIGHT - this.pixel_size) / 2;
     this.style.top = this.y + "px";
     this.style.left = this.x + "px";
+
+    // Si les préférences utilisateur le spécifient, on affiche la HitBox
+    if (AH_MainController.scope.game.showHitboxes)
+      super.addVisualHitBox();
   }
 
   /***********************************************************************
    * Fonction déplaçant l'objet graphique                                *
    ***********************************************************************/
   move() {
-
-    // Calcul des nouvelles coordonnées
-    this.y -= this.params.deltaY;
-    this.x += this.params.deltaX;
-    
-    // Ramène à l'autre bord en cas de sortie d'écran
-    if (this.y > WINDOW_HEIGHT) 
-      this.y -= (WINDOW_HEIGHT + SPACESHIP_SIZE);
-    if (this.y < -SPACESHIP_SIZE) 
-      this.y += (WINDOW_HEIGHT + SPACESHIP_SIZE);
-    if (this.x > WINDOW_WIDTH) 
-      this.x -= (WINDOW_WIDTH + SPACESHIP_SIZE);
-    if (this.x < -SPACESHIP_SIZE) 
-      this.x += (WINDOW_WIDTH + SPACESHIP_SIZE);
+    super.move();
 
     // Permet de conserver un angle compris entre 0° et 360°
-    if (this.params.angle >= 360) this.params.angle -= 360;
-    if (this.params.angle < 0) this.params.angle += 360;
+    if (this.angle >= 360) this.angle -= 360;
+    if (this.angle < 0) this.angle += 360;
 
     // Application des nouvelles coordonnées et de l'angle
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
-    this.style.transform = "rotateZ(" + this.params.angle + "deg)";
+    this.style.transform = "rotateZ(" + this.angle + "deg)";
   }
 
   /***********************************
@@ -111,62 +187,32 @@ class AH_Spaceship extends HTMLDivElement {
     // Calcul des coordonnées d'apparition du tir :
     //  -> x et y correspondent au coin supérieur gauche.
     //  -> il faut déterminer le point central du vaisseau pour déterminer les coordonnées d'apparition du tir selon l'angle
-    let angle_rad = this.params.angle * Math.PI / 180;
+    let angle_rad = this.angle * Math.PI / 180;
     let power = AH_Shop.getShopAttributeValue("POW");
     let x = this.x + (SPACESHIP_SIZE / 2) + (Math.sin(angle_rad) * SPACESHIP_SIZE / 2) - (power * SHOT_BASE_SIZE / 2);
     let y = this.y + (SPACESHIP_SIZE / 2) - (Math.cos(angle_rad) * SPACESHIP_SIZE / 2) - (power * SHOT_BASE_SIZE / 2);
 
     // Création du tir
-    let shot = new AH_Shot(power, this.params.angle, AH_Shop.getShopAttributeValue("VEL"), x, y);
+    new AH_Shot(power, this.angle, AH_Shop.getShopAttributeValue("VEL"), x, y);
   }
 
   /************************************************************
    * Fonction invoquée lors d'une collision avec un asteroïde *
    ************************************************************/
   explode() {
-    AH_MainController.scope.controls.paused = true;
-    this.classList.add("explosion");
-    setTimeout(()=> {
-      this.init();
+
+    // Après l'animation d'explosion du vaisseau, on ouvre le rapport de fin de vague et on ré-initialise la
+    // position et l'angle et les déplacements du vaisseau pour le niveau suivant
+    super.explode(()=> { 
       AH_MainController.showWaveIncomesReport(true);
-    }, 450);
+      this.init();
+    });
+
+    // Mise en pause
+    AH_MainController.scope.controls.paused = true;
   }
 }
 customElements.define('ah-js-spaceship', AH_Spaceship, { extends: 'div' });
-
-/* Usage HTML uniquement */
-// <ah-spaceship rs-model="scope.params.spaceship"></ah-spaceship>
-class AH_HTML_Spaceship extends HTMLElement {
-
-  /*******************************************************************
-   * Constructeur: appeler simplement le constructeur de HTMLElement *
-   *******************************************************************/
-  constructor() { super(); }
-
-  /*************************************************
-   * S'exécute lors de l'ajout du composant au DOM *
-   *************************************************/
-  connectedCallback() {
-    let shadow = this.attachShadow({ mode: SHADOW_MODE });
-    let rs_model = this.getAttribute("rs-model");
-    RS_WCL.styleShadow(shadow, 'AH_components.css');
-    this.innerSpaceship = new AH_Spaceship(rs_model);
-    shadow.appendChild(this.innerSpaceship);
-  }
-
-  // Transposition des fonction et propriétés du composant interne
-  get hitbox_size_coef() { return this.innerSpaceship.hitbox_size_coef; }
-  get pixel_size() { return this.innerSpaceship.pixel_size; }
-  get x() { return this.innerSpaceship.x; }
-  get y() { return this.innerSpaceship.y; }
-  move() { this.innerSpaceship.move(); }
-  shoot() { this.innerSpaceship.shoot(); }
-  init() { this.innerSpaceship.init(); }
-  explode() { this.innerSpaceship.explode(); }
-  getBoundingClientRect() { return this.innerSpaceship.getBoundingClientRect(); } // Surcharge de la fonction HTMLElement.getBoundingClientRect()
-}
-customElements.define('ah-spaceship', AH_HTML_Spaceship);
-
 
 //=====================================================================================================================================
 
@@ -178,7 +224,7 @@ customElements.define('ah-spaceship', AH_HTML_Spaceship);
 // Dans le DOM ==> <div class="game shot"></div>
 //---------------------------------------------------------------------------------------------------
 /* Usage JS uniquement */
-class AH_Shot extends HTMLDivElement {
+class AH_Shot extends MobileGameElement {
 
   /***********************************************************************
    * Construction du tir                                                 *
@@ -191,17 +237,13 @@ class AH_Shot extends HTMLDivElement {
   constructor(power, angle, velocity, x, y) {
 
     // Construction HTML
-    super();
-    this.classList.add("game");
+    super(x, y);
     this.classList.add("shot");
-    this.style.top = y + "px";
-    this.style.left = x + "px";
-    this.style.width = SHOT_BASE_SIZE * power + "px";
-    this.style.height = SHOT_BASE_SIZE * power + "px";
+    this.pixel_size = SHOT_BASE_SIZE * power;
+    this.style.width = this.pixel_size + "px";
+    this.style.height = this.pixel_size + "px";
 
     // Initialisation des données internes au composant
-    this.x = x;
-    this.y = y;
     this.power = power;
 
     // Calcul de deltaX et deltaY, pour les déplacements
@@ -217,31 +259,14 @@ class AH_Shot extends HTMLDivElement {
   /***********************************************************************
    * Fonction déplaçant l'objet graphique                                *
    ***********************************************************************/
-  move() {
-
-    // Calcul des nouvelles coordonnées
-    this.y -= this.deltaY;
-    this.x += this.deltaX;
-    
-    // Retire l'élément du DOM en cas de sortie d'écran
-    let shot_size = SHOT_BASE_SIZE * this.power;
-    if (this.y > WINDOW_HEIGHT || this.y < -shot_size || this.x > WINDOW_WIDTH || this.x < -shot_size) 
-      this.remove();
-
-    // Application des nouvelles coordonnées et de l'angle
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
-  }
+  move() { super.move(true); }
 
   /************************************************************
    * Fonction invoquée lors d'une collision avec un asteroïde *
    ************************************************************/
   explode() {
-    this.classList.add("explosion");
-    this.classList.remove("shot");
-    setTimeout(()=> {
-      this.remove();
-    }, 450);
+    super.explode(()=> { this.remove(); });
+    this.classList.remove("shot"); // Evite que le tir soit pris en compte par les tests de collision, pendant l'animation de son explosion
   }
 }
 customElements.define('ah-js-shot', AH_Shot, { extends: 'div' });
@@ -258,7 +283,7 @@ customElements.define('ah-js-shot', AH_Shot, { extends: 'div' });
 // Dans le DOM ==> <div class="game asteroid"></div>
 //---------------------------------------------------------------------------------------------------
 /* Usage JS uniquement */
-class AH_Asteroid extends HTMLDivElement {
+class AH_Asteroid extends MobileGameElement {
 
   /***********************************************************************
    * Construction de l'astéroïde                                         *
@@ -268,8 +293,7 @@ class AH_Asteroid extends HTMLDivElement {
   constructor(size, x, y) {
 
     // Construction HTML
-    super();
-    this.classList.add("game");
+    super(x, y);
     this.classList.add("asteroid");
 
     // Cette propriété est nécessaire pour régler la hitbox des visuels qui ne sont pas des disques parfaits
@@ -285,7 +309,6 @@ class AH_Asteroid extends HTMLDivElement {
 
     // Intégration au DOM ainsi qu'au scope du controller principal
     AH_MainController.addToGameWindow(this);
-    AH_MainController.scope.asteroids.push(this);
   }
 
   /*****************************************
@@ -325,13 +348,10 @@ class AH_Asteroid extends HTMLDivElement {
 
     // Si le paramétrage du jeu le spécifie, on affiche la HitBox => aide visuelle au paramétrage
     if (AH_MainController.scope.game.showHitboxes)
-      ah_addHitBox(this, pixel_size);
+      this.addVisualHitBox();
 
     // Si les coordonnées sont passées en paramètre, on les initialise sinon c'est aléatoire
-    if (x != undefined && y != undefined) {
-      this.x = x;
-      this.y = y;
-    } else {
+    if (x == undefined && y == undefined) {
       //--------- GESTION DU RANDOM SPOT DE DEBUT DE VAGUE ----------
       // Les astéroïdes apparaissent sur des bandes de 100px de chaque côté de l'écran
       // La position sur ces bandes est aléatoire : 0 < x < 200. Si 0 < x < 100 => gauche, sinon droite.
@@ -344,11 +364,11 @@ class AH_Asteroid extends HTMLDivElement {
              ? x - (pixel_size / 2)
              : x - (pixel_size / 2) + AST_SPAWN_ZONE_WIDTH + (WINDOW_WIDTH - (AST_SPAWN_ZONE_WIDTH * 2));
       this.y = y - (pixel_size / 2);
+      this.style.top = this.y + "px";
+      this.style.left = this.x + "px";
     }
 
     // Application de la rotation aléatoire, de la vie et des aspects graphiques liés aux corrdonnées afin d'éviter les collisions ramdom lors du pop
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
     this.deltaX = AH_MainController.reelAleatoire(AST_MAX_INITIAL_AXIAL_SPEED) - (AST_MAX_INITIAL_AXIAL_SPEED / 2);
     this.deltaY = AH_MainController.reelAleatoire(AST_MAX_INITIAL_AXIAL_SPEED) - (AST_MAX_INITIAL_AXIAL_SPEED / 2);
     this.display_angle = AH_MainController.reelAleatoire(360);
@@ -363,31 +383,16 @@ class AH_Asteroid extends HTMLDivElement {
    * Fonction déplaçant l'objet graphique                                *
    ***********************************************************************/
   move() {
-
-    // Calcul des nouvelles coordonnées
+    super.move();
     this.display_angle += this.radial_speed;
-    this.y -= this.deltaY;
-    this.x += this.deltaX;
-    
-    // Ramène à l'autre bord en cas de sortie d'écran
-    if (this.y > WINDOW_HEIGHT) 
-      this.y -= (WINDOW_HEIGHT + this.pixel_size);
-    if (this.y < -this.pixel_size) 
-      this.y += (WINDOW_HEIGHT + this.pixel_size);
-    if (this.x > WINDOW_WIDTH) 
-      this.x -= (WINDOW_WIDTH + this.pixel_size);
-    if (this.x < -this.pixel_size) 
-      this.x += (WINDOW_WIDTH + this.pixel_size);
 
-    // Permet de conserver un angle compris entre 0° et 360°
+    // Permet de conserver à tout moment un angle compris entre 0° et 360° (plus pratique pour le debugging)
     if (this.display_angle >= 360) this.display_angle -= 360;
     if (this.display_angle < 0) this.display_angle += 360;
 
     // Application des nouvelles coordonnées et de l'angle
     this.life_bar.style.top = this.y + "px";
     this.life_bar.style.left = this.x + "px";
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
     this.style.transform = "rotateZ(" + this.display_angle + "deg)";
   }
 
@@ -413,18 +418,7 @@ class AH_Asteroid extends HTMLDivElement {
    * Fonction de la destruction par tirs de l'astéroïde       *
    ************************************************************/
   explode() {
-
-    // Affichage de l'explosion puis disparition
-    this.classList.add("explosion");
-    setTimeout(()=> {
-      this.remove();
-    }, 450);
-
-    // Auto-suppression de la liste des astéroïdes dans le scope du controller principal
-    let index = AH_MainController.scope.asteroids.indexOf(this);
-    if (index > -1)
-      AH_MainController.scope.asteroids.splice(index, 1);
-    else console.error("Je le trouve pas dans la liste, lui... comment ça se fait ?", this, AH_MainController.scope.asteroids);
+    super.explode(()=> { this.remove(); });
 
     // Selon la taille de l'astéroïde : si 1 (taille mini) -> gain d'argent, sinon création d'un bonus et de deux astéroïdes plus petits
     if (this.size > 1) {
@@ -461,7 +455,7 @@ customElements.define('ah-js-asteroid', AH_Asteroid, { extends: 'div' });
 // Dans le DOM ==> <div class="game bonus"></div>
 //---------------------------------------------------------------------------------------------------
 /* Usage JS uniquement */
-class AH_Bonus extends HTMLDivElement {
+class AH_Bonus extends MobileGameElement {
 
   /***********************************************************************
    * Construction du bonus                                               *
@@ -469,29 +463,24 @@ class AH_Bonus extends HTMLDivElement {
   constructor(x, y) {
 
     // Construction HTML
-    super();
-    this.classList.add("game");
+    super(x, y);
     this.classList.add("bonus");
     this.innerHTML = "€";
 
     // Génération des caractéristiques de départ
-    this.init(x, y);
+    this.init();
 
     // Intégration au DOM ainsi qu'au scope du controller principal
     AH_MainController.addToGameWindow(this);
-    AH_MainController.scope.bonusItems.push(this);
   }
 
   /*****************************
    * Fonction d'initialisation *
    *****************************/
-  init(x, y) {
-    this.x = x;
-    this.y = y;
-    this.style.width = BONUS_SIZE + "px";
-    this.style.height = BONUS_SIZE + "px";
-    this.style.left = x + "px";
-    this.style.top = y + "px";
+  init() {
+    this.pixel_size = BONUS_SIZE;
+    this.style.width = this.pixel_size + "px";
+    this.style.height = this.pixel_size + "px";
     this.deltaX = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.deltaY = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.timeRemaining = BONUS_LIFE_TIME;
@@ -501,24 +490,7 @@ class AH_Bonus extends HTMLDivElement {
    * Fonction déplaçant l'objet graphique                                *
    ***********************************************************************/
   move() {
-
-    // Calcul des nouvelles coordonnées
-    this.y += this.deltaY;
-    this.x += this.deltaX;
-    
-    // Ramène à l'autre bord en cas de sortie d'écran
-    if (this.y > WINDOW_HEIGHT) 
-      this.y -= (WINDOW_HEIGHT + BONUS_SIZE);
-    if (this.y < -BONUS_SIZE) 
-      this.y += (WINDOW_HEIGHT + BONUS_SIZE);
-    if (this.x > WINDOW_WIDTH) 
-      this.x -= (WINDOW_WIDTH + BONUS_SIZE);
-    if (this.x < -BONUS_SIZE) 
-      this.x += (WINDOW_WIDTH + BONUS_SIZE);
-
-    // Application des nouvelles coordonnées
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
+    super.move();
 
     // Impact durée de vie => si le pallier est atteint, le bonus se met à clignoter, à 0 il diparaît
     this.timeRemaining--;
@@ -526,21 +498,6 @@ class AH_Bonus extends HTMLDivElement {
       this.classList.add("blink");
     if (this.timeRemaining == 0) 
       this.destroy();
-  }
-
-  /**
-   * Fonction libérant la mémoire lorsque l'objet n'est plus utile
-   */
-  destroy() {
-
-    // Auto-suppression de la liste des bonus dans le scope du controller principal
-    let index = AH_MainController.scope.bonusItems.indexOf(this);
-    if (index > -1)
-      AH_MainController.scope.bonusItems.splice(index, 1);
-    else console.error("Je le trouve pas dans la liste, lui... comment ça se fait ?", this, AH_MainController.scope.bonusItems);
-
-    // Suppression du DOM
-    this.remove();
   }
 }
 customElements.define('ah-js-bonus', AH_Bonus, { extends: 'div' });
