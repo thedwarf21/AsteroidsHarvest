@@ -419,6 +419,7 @@ class AH_Asteroid extends MobileGameElement {
    ************************************************************/
   explode() {
     super.explode(()=> { this.remove(); });
+    this.classList.remove("asteroid");
 
     // Selon la taille de l'astéroïde : si 1 (taille mini) -> gain d'argent, sinon création d'un bonus et de deux astéroïdes plus petits
     if (this.size > 1) {
