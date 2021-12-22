@@ -4,9 +4,12 @@
 //------------------------------------------ Interface et fonctionnalités ------------------------------------------ 
 // 
 //  - Modifier les paramètres afin que le jeu soit plus dynamique, dès le départ
+//  
+//  - Mettre en place l'écran d'aide (bouton à gauche du bouton de début de vague, dans le magasin et en haut à gauche dans la bordure)
 //
 //	- Trouver un illustrateur pour:
-//  	* Mettre en place une introduction, présentant le pitch
+//  	* Mettre en place une introduction, présentant le pitch 
+//  		(techniquement, ça peut être marrant à faire. Surtout sous la forme d'une classe permettant de gérer génériquement les cinématique)
 //	    * Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
 //  	
 //  - Mettre en place un second mode de jeu "Arcade", le mode de jeu d'origine serait bâptisé "Mode Infini":
@@ -15,7 +18,7 @@
 //  		sont insuffisantes pour quitter la zone.
 //  		
 //  			En désespoir de cause, le StarShip Hope s'enfonce dans une ceinture d'astéroïdes pour tenter de perdre 
-//  		l'assaillant tout en reconstituant son stock de minerais afin de s'éloigner au plus vite de la menace.
+//  		l'assaillant tout en reconstituant son stock de minerais, afin de s'éloigner au plus vite de la menace.
 //  	* Ce qui change:
 //  		Les vagues deviennent des jours
 //  		Après un jour, on passe au jour suivant, même en cas de crash => toujours plus d'astéroïdes
@@ -40,10 +43,11 @@
  *   		# placements et déplacements générique
  *   		# explosion générique
  *   		# génération de l'objet RS_Hitbox correspondant à this
+ *   - Préfixage en '__' des méthodes réservées à un usage interne à la classe (mot clé private absent du lexique javascript)
  *   		
- * Les quatre derniers points étant de la "mise au propre" du code: 
- * Ce genre d'opération est chronophage sur le moment, mais ce temps investi est vite amorti 
- * (gain de temps et d'énergie sur les corrections de bugs et évolutions) 
+ * Les cinq derniers points étant de la "mise au propre" du code: 
+ * Ce genre d'opération est chronophage sur le moment, mais le temps investi est vite amorti 
+ * (gain de temps et d'énergie sur les corrections de bugs et évolutions à venir) 
  */
 
 // Constantes
@@ -243,7 +247,7 @@ class AH_MainController {
 	/**
 	 * Fonction remettant l'affichage à 0
 	 */
-	static clearGameWindow() {
+	static __clearGameWindow() {
 		let spaceship = AH_MainController.spaceship;
 		if (spaceship)
 			spaceship.remove();
@@ -269,7 +273,7 @@ class AH_MainController {
 	 * Fonction démarrant la vague suivante
 	 */
 	static startWave() {
-		AH_MainController.clearGameWindow();
+		AH_MainController.__clearGameWindow();
 
 		// Créer les astéroïdes correspondant au niveau (Lvl)
 		// ast. taille FIRST_ENCOUNTER_SIZE -> Lvl % SIZE_COMPUTE_BASE
@@ -294,7 +298,8 @@ class AH_MainController {
 		} while (level > 0); 
 
 		// Création du vaisseau initialisé par défaut (centré et immobile)
-		AH_MainController.addToGameWindow(new AH_Spaceship());
+		let spaceship = new AH_Spaceship();
+		AH_MainController.addToGameWindow(spaceship);
 
 		// Réinitialiser les compteurs puis démarrer le jeu
 		AH_MainController.scope.game.tinyAstDestroyed = 0;

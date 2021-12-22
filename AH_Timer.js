@@ -8,9 +8,9 @@ class AH_Timer {
 	 */
 	static letsPlay() {
 		if (!AH_MainController.scope.controls.paused) {
-			AH_Timer.applyControls();
-			AH_Timer.moveEverything();
-			AH_Timer.testCollides();
+			AH_Timer.__applyControls();
+			AH_Timer.__moveEverything();
+			AH_Timer.__testCollides();
 		}
 		setTimeout(AH_Timer.letsPlay, TIME_INTERVAL);
 	}
@@ -18,7 +18,7 @@ class AH_Timer {
 	/**
 	 * Applique les commandes actuellement pressées
 	 */
-	static applyControls() {
+	static __applyControls() {
 		let scope = AH_MainController.scope;
 		let spaceship = AH_MainController.spaceship;
 
@@ -52,7 +52,7 @@ class AH_Timer {
 	/**
 	 * Déclenche le mouvement de chaque élément
 	 */
-	static moveEverything() {
+	static __moveEverything() {
 		AH_MainController.spaceship.move();
 		for (let shot of AH_MainController.shots)
 			shot.move();
@@ -65,12 +65,12 @@ class AH_Timer {
 	/**
 	 * Effectue les tests de collision
 	 */
-	static testCollides() {
+	static __testCollides() {
 		let spaceship = AH_MainController.spaceship;
 
 		// Les astéroïdes sont impliqués dans tous les tests de collision (hors collecte d'un bonus)
 		for (let asteroid of AH_MainController.asteroids) {
-			
+
 			// Test de collision avec les tirs (on les parcourt tous)
 			for (let shot of AH_MainController.shots) {
 				if (shot.hitbox.checkCollide(asteroid.hitbox)) {

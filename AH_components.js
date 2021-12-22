@@ -113,7 +113,6 @@ class MobileGameElement extends HTMLDivElement {
 
   /**
    * Ecrit un message d'erreur dans la console: propriété en lecture seule
-   * Ce qui peut éviter d'un jour chercher pendant 3h pourquoi ça ne fonctionne pas...
    */
   set hitbox(value) { console.error("La propriété hitbox de MobileGameElement est en lecture seule."); }
 }
@@ -143,13 +142,13 @@ class AH_Spaceship extends MobileGameElement {
     this.hitbox_size_coef = SPACESHIP_HITBOX_RADIUS_COEF;
 
     // Position initiale, au centre de la scène
-    this.init();
+    this.__init();
   }
 
   /*****************************
    * Fonction d'initialisation *
    *****************************/
-  init() {
+  __init() {
     this.angle = 0;
     this.deltaX = 0;
     this.deltaY = 0;
@@ -205,7 +204,7 @@ class AH_Spaceship extends MobileGameElement {
     // position et l'angle et les déplacements du vaisseau pour le niveau suivant
     super.explode(()=> { 
       AH_MainController.showWaveIncomesReport(true);
-      this.init();
+      this.__init();
     });
 
     // Mise en pause
@@ -300,12 +299,12 @@ class AH_Asteroid extends MobileGameElement {
     this.hitbox_size_coef = AST_HITBOX_RADIUS_COEF;
 
     // Génération des caractéristiques de départ
-    this.init(size, x, y);
+    this.__init(size, x, y);
 
     // Ajout de la barre de vie
-    // La fonction à besoin de this.pixel_size (initialisé dans this.init()), 
-    // il est donc important que l'appel à createLifeBar() soit effectué après this.init()
-    this.createLifeBar();
+    // La fonction à besoin de this.pixel_size (initialisé dans this.__init()), 
+    // il est donc important que l'appel à createLifeBar() soit effectué après this.__init()
+    this.__createLifeBar();
 
     // Intégration au DOM ainsi qu'au scope du controller principal
     AH_MainController.addToGameWindow(this);
@@ -314,7 +313,7 @@ class AH_Asteroid extends MobileGameElement {
   /*****************************************
    * Ajoute une barre de vie à l'astéroïde *
    *****************************************/
-  createLifeBar() {
+  __createLifeBar() {
     
     // Barre de vie en elle-même
     this.life_bar = document.createElement("DIV");
@@ -335,12 +334,12 @@ class AH_Asteroid extends MobileGameElement {
   /**************************************************************
    * Réajuste la taille de la partie colorée de la barre de vie *
    **************************************************************/
-  refreshLifeBar() { this.life_ink.style.width = (this.health / this.max_health * 100) + "%"; }
+  __refreshLifeBar() { this.life_ink.style.width = (this.health / this.max_health * 100) + "%"; }
 
   /*****************************
    * Fonction d'initialisation *
    *****************************/
-  init(size, x, y) {
+  __init(size, x, y) {
 
     let pixel_size = BASE_AST_SIZE * size;
     this.style.width = pixel_size + "px";
@@ -407,7 +406,7 @@ class AH_Asteroid extends MobileGameElement {
       this.life_bar.remove();
       this.explode();
     } else {
-      this.refreshLifeBar();
+      this.__refreshLifeBar();
       this.deltaX += Math.sin(angle_rad) * power;
       this.deltaY += Math.cos(angle_rad) * power;
       this.radial_speed += AH_MainController.reelAleatoire(1 / AST_RADIAL_SPEED_DIVIDER) - (0.5 * AST_RADIAL_SPEED_DIVIDER) * power;
@@ -469,7 +468,7 @@ class AH_Bonus extends MobileGameElement {
     this.innerHTML = "€";
 
     // Génération des caractéristiques de départ
-    this.init();
+    this.__init();
 
     // Intégration au DOM ainsi qu'au scope du controller principal
     AH_MainController.addToGameWindow(this);
@@ -478,7 +477,7 @@ class AH_Bonus extends MobileGameElement {
   /*****************************
    * Fonction d'initialisation *
    *****************************/
-  init() {
+  __init() {
     this.pixel_size = BONUS_SIZE;
     this.style.width = this.pixel_size + "px";
     this.style.height = this.pixel_size + "px";

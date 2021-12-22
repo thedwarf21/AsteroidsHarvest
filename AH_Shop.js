@@ -39,7 +39,7 @@ class AH_Shop {
 			// Parcours des la liste "shop" pour afficher le magasin
 			let itemsContainer = popup.querySelector("#items-container");
 			for (let shopElem of scope.shop) {
-				let shopItem = AH_Shop.getHtmlShopItem(shopElem);
+				let shopItem = AH_Shop.__getHtmlShopItem(shopElem);
 				shopElem.htmlElement = shopItem;
 				itemsContainer.appendChild(shopItem);
 			}
@@ -61,7 +61,7 @@ class AH_Shop {
 	 * Cette méthode attend pour paramètre, un élément de la liste "scope.shop" afin d'en générer l'affichage
 	 * Sous la forme d'un DIV de classe "shop-item" structuré avec tout son contenu
 	 */
-	static getHtmlShopItem(shopElem) {
+	static __getHtmlShopItem(shopElem) {
 
 		// Div principal
 		let shopItem = document.createElement("DIV");
@@ -93,7 +93,7 @@ class AH_Shop {
 		shopItem.ah_shopElem = shopElem;
 		shopItem.ah_divPrice = divPrice;
 		shopItem.ah_divEffect = divEffect;
-		shopItem.ah_price = AH_Shop.paintItemInfos(shopElem, divPrice, divEffect);
+		shopItem.ah_price = AH_Shop.__paintItemInfos(shopElem, divPrice, divEffect);
 		shopItem.addEventListener('click', function(event) {
 
 			// Clic ignoré si pas assez d'argent ou niveau maximum atteint
@@ -102,7 +102,7 @@ class AH_Shop {
 			   	// Mise à jour des données
 				AH_MainController.scope.game.money -= this.ah_price;
 				this.ah_shopElem.level++;
-				this.ah_price = AH_Shop.getPrice(this.ah_shopElem);
+				this.ah_price = AH_Shop.__getPrice(this.ah_shopElem);
 
 				// Mise à jour de l'interface
 				document.getElementById("player_money").innerHTML = AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money);
@@ -117,16 +117,16 @@ class AH_Shop {
 	 */
 	static refreshAllShopItems() {
 		for (let shopElem of AH_MainController.scope.shop)
-          shopElem.ah_price = AH_Shop.paintItemInfos(shopElem, shopElem.htmlElement.ah_divPrice, shopElem.htmlElement.ah_divEffect);
+          shopElem.ah_price = AH_Shop.__paintItemInfos(shopElem, shopElem.htmlElement.ah_divPrice, shopElem.htmlElement.ah_divEffect);
 	}
 
 	/**
 	 * Fonction mettant à jour les informations de prix et d'effets pour un élément du magasin
 	 */
-	static paintItemInfos(shopElem, divPrice, divEffect) {
+	static __paintItemInfos(shopElem, divPrice, divEffect) {
 
 		// Prix
-		let price = AH_Shop.getPrice(shopElem);
+		let price = AH_Shop.__getPrice(shopElem);
 		let isMaxed = (shopElem.max_level && shopElem.level == shopElem.max_level)
 		if (price > AH_MainController.scope.game.money)
 			divPrice.classList.add("too-expensive");
@@ -159,7 +159,7 @@ class AH_Shop {
 	 * le coefficient à appliquer au premier pour obtenir le second,
 	 * ainsi que le rang de l'élément de la suite dont on souhaite la valeur.
 	 */
-	static getFibonacciValue(level_0_value, coef, level) {
+	static __getFibonacciValue(level_0_value, coef, level) {
 		let prev_values = [];
 		for (let i=0; i<level+1; i++) {
 			let value;
@@ -176,12 +176,13 @@ class AH_Shop {
 	/**
 	 * Fonction métier s'appuyant sur getFibonacciValue recevant en paramètre un élément de la liste shop
 	 */
-	static getPrice(shopElem) { return AH_Shop.getFibonacciValue(shopElem.level_1_price, shopElem.level_2_price_coef, shopElem.level); }
+	static __getPrice(shopElem) { return AH_Shop.__getFibonacciValue(shopElem.level_1_price, shopElem.level_2_price_coef, shopElem.level); }
 
 	/**
-	 * Retourne la liste des éléments de type <p></p> du blabla du magasin
+	 * N'est plus utilisée
+	 * Je garde le code sous le coude pour quand je ferai l'écran d'aide... (c'est mieux quand il y en a un)
 	 */
-	static getHtmlBlaBla() {
+	/*static __getHtmlBlaBla() {
 		let listeRetour = [];
 
 		// Titre commandes
@@ -208,5 +209,5 @@ class AH_Shop {
 		blablaHint.innerHTML = "<b><u>Conseil:</u></b> Allez-y doucement sur l'accélération car vous êtes dans l'espace : pas de frottement ici, donc un élan ne peut être contré que par un élan inverse.";
 		listeRetour.push(blablaHint);
 		return listeRetour;
-	}
+	}*/
 }
