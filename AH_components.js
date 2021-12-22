@@ -154,8 +154,8 @@ class AH_Spaceship extends MobileGameElement {
     this.deltaX = 0;
     this.deltaY = 0;
     this.pixel_size = SPACESHIP_SIZE;
-    this.x = (WINDOW_WIDTH - this.pixel_size) / 2;
-    this.y = (WINDOW_HEIGHT - this.pixel_size) / 2;
+    this.x = (WINDOW_WIDTH - SPACESHIP_SIZE) / 2;
+    this.y = (WINDOW_HEIGHT - SPACESHIP_SIZE) / 2;
     this.style.top = this.y + "px";
     this.style.left = this.x + "px";
 
