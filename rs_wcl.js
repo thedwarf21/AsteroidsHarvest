@@ -1,3 +1,56 @@
+/***** Fonctions AJaX *****/
+
+/****************************************************************************
+ * Fonction de routage pour l'affichage dans la partie centrale de la page. *
+ ****************************************************************************
+ * @param | {String}   | url      | URL de la ressource HTML                *
+ * @param | {function} | callback | Fonction de rappel optionnelle          *
+ * @param | {Object}   | target   | Élément HTML cible du routage           *
+ ****************************************************************************/
+function routage(url, callback, target) {
+  var elmnt = target || document.getElementById('milieu');
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4) {
+      if (this.status == 200) {
+        elmnt.innerHTML = this.responseText;
+        if (callback)
+          callback();
+      }
+      if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+    }
+  }
+  xhttp.open("GET", url, true);
+  xhttp.send();
+}
+
+/**********************************************************************************
+ * Fonction générique d'appel AJaX                                                *
+ **********************************************************************************
+ * @param  | {String}        | url    | URL de l'API appelée                      *
+ * @param  | {String}        | method | Méthode de passage des paramètres         *
+ * @param  | {String|Object} | params | Paramètres (string en GET, objet en POST) *
+ * @param  | {Function}      | fnOk   | Fonction de rappel si succès              *
+ **********************************************************************************/
+function xhr(url, method, params, fnOk) {
+  let xhttp = new XMLHttpRequest();
+  xhttp.responseType = 'json';
+  xhttp.onload = function () { 
+    fnOk(this.response);
+  }
+  
+  // On paramètre la requête différemment suivant la méthode de transport des paramètres
+  if (method === "GET") {
+    if (params) params = "?" + params;
+    xhttp.open(method, url + params, true);
+    xhttp.send();
+  } else if (method === "POST") {
+    xhttp.open(method, url);
+    xhttp.setRequestHeader('Content-Type', 'application/json');
+    xhttp.send(JSON.stringify(params));
+  } else console.error(`xhr() ===> Type de requête inconnu: '${method}'`);
+}
+
 /**************************************************************************************
  * Constantes relatives à l'affichage des toasts, encapsulés dans une constante objet *
  * @type                                          {Object}                            *
@@ -137,7 +190,8 @@ class RS_WCL {
  * Exemple (hors shadow DOM):                                             *
  *   new RS_Binding({                                                     *
  *     object: obj,                                                       *
- *     property: "a"                                                      *
+ *     property: "a" [,                                                   *
+ *     callback: function() { // hook post modification }]                *
  *   })                                                                   *
  *   .addBinding(myInputElement1, "value", "keyup")                       *
  *   .addBinding(myInputElement2, "value", "keyup")                       *

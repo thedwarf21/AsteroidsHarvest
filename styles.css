@@ -279,3 +279,9 @@ input.start-wave-button:active {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
+
+/**
+ * Popup parmètres
+ */
+.pref-title { width: 20%; }
+.pref-value { width: 50%; }

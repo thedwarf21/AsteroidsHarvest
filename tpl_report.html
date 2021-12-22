@@ -1,0 +1,41 @@
+<div class="dialog-body">
+	<center>
+		<div class="img-report"></div>
+	</center>
+
+	<!-- Rapport sur les bonus ramassés -->
+	<div class="report-text report-title">Bonus</div>
+	<div class="report-line">
+		<div class="report-text"><b>Collectés:</b></div>
+		<div><span id="bonus_collected"></span></div>
+		<div class="report-text"><b>Gains:</b></div>
+		<div><span id="bonus_income"></span> Brouzoufs</div>
+	</div>
+
+
+	<!-- Rapport sur les petits astéroïdes (size=1) détruits -->
+	<div class="report-text report-title">Petits astéroïdes</div>
+	<div class="report-line">
+		<div class="report-text"><b>Détruits:</b></div>
+		<div><span id="tiny_ast_destroyed"></span></div>
+		<div class="report-text"><b>Gains:</b></div>
+		<div><span id="tiny_ast_income"></span> Brouzoufs</div>
+	</div>
+
+	<!-- Rapport sur les pertes dûes au crash -->
+	<div class="report-text report-title loss-section">Pertes</div>
+	<div class="report-line loss-section">
+		<div class="report-text"><b>Non récupérés:</b></div>
+		<div><span id="loss_rate"></span> %</div>
+	</div>
+
+	<!-- Total -->
+	<div class="report-total report-text">
+		<b>Total:</b> <span id="total_income"></span> Brouzoufs
+	</div>
+</div>
+
+<!-- Bouton de fermeture -->
+<div class="dialog-footer">
+	<input type="button" class="start-wave-button" value="Bien reçu" id="btn_close" />
+</div>

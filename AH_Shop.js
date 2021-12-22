@@ -33,87 +33,27 @@ class AH_Shop {
 		scope.controls.paused = true;
 
 		// Construction de la popup
-		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false);
-		let div_msg = document.createElement("DIV");
-		div_msg.classList.add("dialog-body");
-		popup.appendToContent(div_msg);
-		let div_btn = document.createElement("DIV");
-		div_btn.classList.add("dialog-footer");
-		popup.appendToContent(div_btn);
+		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false, "tpl_shop.html", function() {
+			popup.querySelector("#player_money").innerHTML = AH_MainController.intToHumanReadableString(scope.game.money);
 
-		// Paragraphe d'accueil
-		let welcomeP = document.createElement("P");
-		welcomeP.classList.add("shop-blabla");
-		welcomeP.classList.add("welcome-text");
-		welcomeP.innerHTML = "<i>Bienvenue au magasin. Je vous en prie, faites le tour de nos articles de contreb... je veux dire, de qualité.</i>";
-		div_msg.appendChild(welcomeP);
+			// Parcours des la liste "shop" pour afficher le magasin
+			let itemsContainer = popup.querySelector("#items-container");
+			for (let shopElem of scope.shop) {
+				let shopItem = AH_Shop.getHtmlShopItem(shopElem);
+				shopElem.htmlElement = shopItem;
+				itemsContainer.appendChild(shopItem);
+			}
 
-		// Affichage de l'argent détenu
-		let divMoney = document.createElement("DIV");
-		divMoney.classList.add("owned-money");
-		divMoney.innerHTML = `<b>Argent en votre possession:</b> <span id="player_money">${AH_MainController.intToHumanReadableString(scope.game.money)}</span> Brouzoufs`;
-		div_msg.appendChild(divMoney);
-
-		// Construction du conteneur flex permettant d'afficher les éléments du magasin d'améliorations
-		let itemsContainer = document.createElement("DIV");
-		itemsContainer.classList.add("shop-item-container");
-		div_msg.appendChild(itemsContainer);
-
-		// Parcours des la liste "shop" pour afficher le magasin
-		for (let shopElem of scope.shop) {
-			let shopItem = AH_Shop.getHtmlShopItem(shopElem);
-			shopElem.htmlElement = shopItem;
-			itemsContainer.appendChild(shopItem);
-		}
-		
-		// Bouton de sauvegarde
-		let btnSave = document.createElement("INPUT");
-		btnSave.setAttribute("type", "button");
-		btnSave.classList.add("save");
-		btnSave.classList.add("button");
-		btnSave.value = "Sauvegarder la partie";
-		btnSave.addEventListener("click", ()=> {
-			RS_Confirm(`<p>Le jeu se sauvegarde sous forme de cookie.</p>
-						<p>Nous n'y stockerons aucune donnée sensible: seulement votre progression dans le jeu.</p>
-						<p>Nous devons simplement vous demander confirmation avant d'effectuer cette opération</p>
-						<p>Consentez-vous à nourir votre navigateur avec un cookie bio ?</p>`, 
-					   "Acceptez-vous de prendre... un cookie ?", 
-					   "Oui, je le veux", 
-					   "Ne pas sauvegarder", 
-					   function() { 
-					   		AH_MainController.saveGame(); 
-					   }
-			);
+			// Libellé et onClick du bouton de fermeture de la popup
+			let closeBtn = popup.querySelector("#btn_close")
+			closeBtn.value = "Affronter vague " + AH_MainController.scope.game.level;
+			closeBtn.addEventListener("click", ()=> {
+				popup.closeModal();
+				AH_MainController.startWave();
+			});
 		});
-		div_btn.appendChild(btnSave);
 
-		// Ajout du /*blabla et du*/ bouton fermant le magasin et lançant le niveau suivant
-		/*let blabla = AH_Shop.getHtmlBlaBla();
-		for (let paragraphe of blabla)
-			div_msg.appendChild(paragraphe);*/
-		let closeBtn = document.createElement("INPUT");
-		closeBtn.setAttribute("type", "button");
-		closeBtn.id = "start-wave";
-		closeBtn.classList.add("start-wave-button");
-		closeBtn.value = `Affronter vague ${AH_MainController.scope.game.level}`;
-		closeBtn.addEventListener("click", ()=> {
-			popup.closeModal();
-			AH_MainController.startWave();
-		});
-		div_btn.appendChild(closeBtn);
-
-		// Bouton de chargement
-		let btnLoad = document.createElement("INPUT");
-		btnLoad.setAttribute("type", "button");
-		btnLoad.classList.add("load");
-		btnLoad.classList.add("button");
-		btnLoad.value = "Charger la partie";
-		btnLoad.addEventListener("click", ()=> {
-			AH_MainController.loadGame();
-		});
-		div_btn.appendChild(btnLoad);
-
-		// La popup est prête : il ne reste plus qu'à l'afficher
+		// Affichage de la popup
 		document.body.appendChild(popup);
 	}
 
@@ -165,7 +105,7 @@ class AH_Shop {
 				this.ah_price = AH_Shop.getPrice(this.ah_shopElem);
 
 				// Mise à jour de l'interface
-				document.getElementById("player_money").innerHTML = `${AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money)}`;
+				document.getElementById("player_money").innerHTML = AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money);
 				AH_Shop.refreshAllShopItems();
 			}
 		});

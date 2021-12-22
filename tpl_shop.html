@@ -1,0 +1,25 @@
+<div class="dialog-body">
+
+	<!-- Phrase d'accueil -->
+	<p class="shop-blabla welcome-text">
+		<i>Bienvenue au magasin. Je vous en prie, faites le tour de nos articles de contreb... je veux dire, de qualité.</i>
+	</p>
+
+	<!-- Argent actuellement détenu par le joueur -->
+	<div class="owned-money">
+		<b>Argent en votre possession:</b> <span id="player_money"></span>
+	</div>
+
+	<!-- Les améliorations en vente: alimenté par le code controller 
+		(avec RS_For ça risque de compliquer les choses au lieu de les simplifier car on référence sur chaque shop-item 
+		les div à mettre à jour lors du clic: prix et effet) -->
+	<div class="shop-item-container" id="items-container"></div>
+</div>
+
+<!-- Bouton de fermeture => attribut "value" dynamique => mis à jour par le code controller -->
+<div class="dialog-footer">
+	<input type="button" class="start-wave-button" id="btn_close" />
+	<button class="paramters button" onclick="AH_MainController.showParameters()">
+		<img src="paramètres.svg" />
+	</button>
+</div>

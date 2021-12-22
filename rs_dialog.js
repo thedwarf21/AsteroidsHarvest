@@ -24,19 +24,21 @@
 //---------------------------------------------------------------------------------------------------
 class RS_Dialog extends HTMLDivElement {
 
-  /**********************************************************************************
-   * Génère une boîte de dialogue et retourne l'objet destiné à recevoir le contenu *
-   **********************************************************************************
-   * @param | {string}  | id                 | ID à affecter à la popup             *
-   * @param | {string}  | title              | Titre à afficher en entête           *
-   * @param | {Array}   | bgClassList        | Liste des classes CSS du fond        *
-   * @param | {Array}   | containerClassList | Liste des classes CSS de la modale   *
-   * @param | {Array}   | classList          | Liste des classes CSS du contenu     *
-   * @param | {boolean} | showCloseBtn       | Permet de ne pas mettre de bouton X  *
-   **********************************************************************************
-   * @return              {DOMElement}               La DIV de contenu              *
-   **********************************************************************************/
-  constructor(id, title, bgClassList, containerClassList, classList, showCloseBtn) {
+  /*******************************************************************************************
+   * Génère une boîte de dialogue et retourne l'objet destiné à recevoir le contenu          *
+   *******************************************************************************************
+   * @param | {string}  | id                 | ID à affecter à la popup                      *
+   * @param | {string}  | title              | Titre à afficher en entête                    *
+   * @param | {Array}   | bgClassList        | Liste des classes CSS du fond                 *
+   * @param | {Array}   | containerClassList | Liste des classes CSS de la modale            *
+   * @param | {Array}   | classList          | Liste des classes CSS du contenu              *
+   * @param | {boolean} | showCloseBtn       | Permet de ne pas mettre de bouton X           *
+   * @param | {string}  | urlHtmlContent     | URL du template HTML                          *
+   * @param | {Function}| onAfterContentLoad | Hook exécuté après injection du template HTML *
+   *******************************************************************************************
+   * @return              {DOMElement}               La DIV de contenu                       *
+   *******************************************************************************************/
+  constructor(id, title, bgClassList, containerClassList, classList, showCloseBtn, urlHtmlContent, onAfterContentLoad) {
     
     // On commence par générer le fond inactivant la fenêtre (onClick = close)
     super();
@@ -76,6 +78,13 @@ class RS_Dialog extends HTMLDivElement {
     for (let classe of classList)
       content.classList.add(classe);
     popup.appendChild(content);
+
+    // Si un template est paramétré, on l'utilise comme contenu HTML
+    if (urlHtmlContent) {
+      if (onAfterContentLoad)
+        routage(urlHtmlContent, onAfterContentLoad, content);
+      else routage(urlHtmlContent, null, content);
+    }
 
     // Intégration de la boîte de dialogue au corps de document
     this.appendChild(popup);

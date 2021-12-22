@@ -31,9 +31,9 @@ class AH_Timer {
 
 		// Gestion du contrôle de la rotation du vaisseau
 		if (scope.controls.leftPressed)
-			scope.spaceship.angle -= ANGLE_STEP;
+			scope.spaceship.angle -= ANGLE_STEP * AH_MainController.scope.game.radial_sensivity;
 		if (scope.controls.rightPressed)
-			scope.spaceship.angle += ANGLE_STEP;
+			scope.spaceship.angle += ANGLE_STEP * AH_MainController.scope.game.radial_sensivity;
 
 		// Conversion de l'angle en radian, pour utilisation des fonctions sinus et cosinus 
 		//=> calcul de la modification de l'inertie horizontale et verticale par trigonométrie

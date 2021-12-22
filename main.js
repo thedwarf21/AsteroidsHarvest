@@ -1,5 +1,10 @@
-// Liste des idées d'amélioration:
-//  	
+//##################################
+//# Liste des idées d'amélioration #
+//##################################
+//------------------------------------------ Interface et fonctionnalités ------------------------------------------ 
+// 
+//  - Modifier les paramètres afin que le jeu soit plus dynamique, dès le départ
+//
 //  - Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
 //  	* En profiter pour demander à l'utilisateur s'il choisit d'accepter les cookies (ce qui évitera de le demader à chaque sauvegarde)	
 //  	
@@ -20,19 +25,37 @@
 //  		Niveau final avec un boss de fin, à un "jour du jeu" donné (ce pourrait être 10, par exemple)
 //  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
 //  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
+// 
+//------------------------------------------ Optimisations, maintenabilité et scallabilité ------------------------------------------ 
+//
+//  - Création d'un fichier RS_GameEngine regroupant les fonctions factorisables liés au moteur de jeu,
+//   notamment une classe RSGE_Hitbox portant:
+//   	* la forme de la hitbox (valeur numérique définie par constante statique - impossible en javascript mais...)
+//   			=> déclaration: 	static get NOM_CONSTANTE() { return 42; }
+//   			   accès:      		RSGE_Hitbox.NOM_CONSTANTE  // sortie: 42
+//   			=> accès en lecture, comme pour une constante => objectif atteint
+//   	* les paramètres liés à la forme (rayon et coordonnées du centre pour le cercle, par exemple)
+//   	* une fonction checkCollide(RSGE_Hitbox hitbox)
+//   => Les composants devront implémenter une méthode getHitbox() retournant un objet de type RSGE_Hitbox
+//   => La fonction testant toutes les collision dans AH_Timer(), utilisera les fonctions getHitbox() des composants 
+//     et checkCollide() des hitbox ainsi obtenues pour tester les collisions
 
 /**
  * EN COURS:
  *   Rendre ANGLE_STEP paramétrable via un curseur "sensibilité radiale"
  *   Un bouton et une popup paramètres seront réalisés dans ce cadre
- *   => Evolution de RS_Dialog afin de permettre de créer une popup à partir d'un template HTML et migrer toutes les popups sur ce concept (clarté du code)
- *   Gérer un coef "sensivity" dans "scope.game" et dans "AH_Timer.applyControls()"
+ *  => Reste à migrer AH_Shop.show() au format template  
  */
 
-// Liste des choses à faire (par priorité croissante => faire la dernière en premier):
-//  - 
-
 // Constantes
+const QUESTION_COOKIES = `<p>Le jeu se sauvegarde sous forme de cookie.</p>
+						  <p>Nous n'y stockerons aucune donnée sensible: seulement votre progression dans le jeu.</p>
+						  <p>Nous devons simplement vous demander confirmation avant d'effectuer cette opération</p>
+						  <p>Consentez-vous à nourir votre navigateur avec un cookie bio ?</p>`;
+const SAVE_ERROR_MSG = `<p>Le système de sauvegarde de ce jeu utilise les cookies.</p>
+						<p>Afin que celui-ci fonctionne, il est donc nécessaire de les accepter.</p>
+						<p>Pour ce faire, il vous suffit de cocher la case portant l'intitulé "Accepter les cookies:"
+						puis de confirmer en cliquant sur le bouton vert indiquant "Oui, je le veux"</p>`;
 const TIME_INTERVAL = 50;
 const ANGLE_STEP = 11.25;
 const SAVE_EXPIRATION_DAYS = 400;	// Nombre de jours d'expiration appliqués au cookie de sauvegarde
@@ -90,7 +113,9 @@ class AH_MainController {
 				beforeNextShot: 0,
 				tinyAstDestroyed: 0,
 				bonusCollected: 0,
-				showHitboxes: false
+				showHitboxes: false,
+				cookies_accepted: false,
+				radial_sensivity: 1
 			},
 			controls: {
 				upPressed: false,
@@ -291,25 +316,30 @@ class AH_MainController {
 	 * Fonction de sauvegarde de la partie en cours
 	 */
 	static saveGame() {
+		// Si le joueur a accépté les cookies dans les préférences, on crée la sauvegarde
+		// sinon, on l'invite à accepter les cookies
+		if (AH_MainController.scope.game.cookies_accepted) {
+			
+			// Création de l'objet de sauvegarde
+			let object = {
+				money: AH_MainController.scope.game.money,
+				level: AH_MainController.scope.game.level,
+				shop: [],
+				radial_sensivity: AH_MainController.scope.game.radial_sensivity
+			}
+			for (let shopElem of AH_MainController.scope.shop) {
+				object.shop.push({
+					code: shopElem.code,
+					level: shopElem.level
+				});
+			}
 
-		// Création de l'objet de sauvegarde
-		let object = {
-			money: AH_MainController.scope.game.money,
-			level: AH_MainController.scope.game.level,
-			shop: []
-		}
-		for (let shopElem of AH_MainController.scope.shop) {
-			object.shop.push({
-				code: shopElem.code,
-				level: shopElem.level
-			});
-		}
-
-		// Ecriture du cookie de sauvegarde
-		const d = new Date();
-		d.setTime(d.getTime() + (SAVE_EXPIRATION_DAYS*24*60*60*1000));
-		let expires = "expires="+ d.toUTCString();
-		document.cookie = "saved_game=" + JSON.stringify(object) + "; " + expires + "; SameSite=Lax";
+			// Ecriture du cookie de sauvegarde
+			const d = new Date();
+			d.setTime(d.getTime() + (SAVE_EXPIRATION_DAYS*24*60*60*1000));
+			let expires = "expires="+ d.toUTCString();
+			document.cookie = "saved_game=" + JSON.stringify(object) + "; " + expires + "; SameSite=Lax";
+		} else RS_Alert (SAVE_ERROR_MSG, "Cookies nécessaires", lbl_btn, callback)
 	}
 
 	/**
@@ -326,9 +356,11 @@ class AH_MainController {
 			let saved_game = JSON.parse(cookieContent);
 			AH_MainController.scope.game.money = saved_game.money;
 			AH_MainController.scope.game.level = saved_game.level;
+			AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
+			AH_MainController.scope.game.cookies_accepted = true;
 			for (let savedShopElem of saved_game.shop)
 				AH_Shop.setShopItemLevel(savedShopElem.code, savedShopElem.level);
-			document.getElementById("start-wave").value = `Affronter vague ${saved_game.level}`;
+			document.getElementById("btn_close").value = `Affronter vague ${saved_game.level}`;
 			document.getElementById("player_money").innerHTML = `${AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money)}`;
 			AH_Shop.refreshAllShopItems();
 		} else alert("Sauvegarde introuvable");
@@ -359,88 +391,42 @@ class AH_MainController {
 	 */
 	static showWaveIncomesReport(level_failed) {
 		AH_MainController.scope.controls.paused = true;
-		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false);
+		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false, "tpl_report.html", function() {
 
-		// Ajout de la div de contenu de la popup
-		let div_content = document.createElement("DIV");
-		div_content.classList.add("dialog-body");
-		popup.appendToContent(div_content);
+			// Cette fonction anonyme s'exécute, juste après l'injection du template, dans le DOM
+			let income_shop_level = AH_Shop.getShopAttributeValue("INC");
+			let bonus_collected = AH_MainController.scope.game.bonusCollected;
+			let bonus_income = (MONEY_PER_BONUS + income_shop_level) * bonus_collected;
+			let tiny_ast_destroyed = AH_MainController.scope.game.tinyAstDestroyed;
+			let tiny_ast_income = income_shop_level * tiny_ast_destroyed;
+			let total_income = level_failed
+							 ? Math.floor((bonus_income + tiny_ast_income) * AH_Shop.getShopAttributeValue("REC"))
+							 : bonus_income + tiny_ast_income;
 
-		// Ajout d'une image d'en-tête
-		let center = document.createElement("CENTER");
-		div_content.appendChild(center);
-		let img = document.createElement("DIV");
-		img.classList.add("img-report");
-		center.appendChild(img);
+			// Affichage des données et mise à jour des éléments calculés
+			AH_MainController.scope.game.money += total_income;
+			document.getElementById("bonus_collected").innerHTML = AH_MainController.scope.game.bonusCollected;
+			document.getElementById("bonus_income").innerHTML = AH_MainController.intToHumanReadableString(bonus_income);
+			document.getElementById("tiny_ast_destroyed").innerHTML = AH_MainController.scope.game.tinyAstDestroyed;
+			document.getElementById("tiny_ast_income").innerHTML = AH_MainController.intToHumanReadableString(tiny_ast_income);
+			document.getElementById("total_income").innerHTML = AH_MainController.intToHumanReadableString(total_income);
 
-		// Données de base
-		let income_shop_level = AH_Shop.getShopAttributeValue("INC");
-		let bonus_collected = AH_MainController.scope.game.bonusCollected;
-		let bonus_income = (MONEY_PER_BONUS + income_shop_level) * bonus_collected;
-		let tiny_ast_destroyed = AH_MainController.scope.game.tinyAstDestroyed;
-		let tiny_ast_income = income_shop_level * tiny_ast_destroyed;
-
-		// Génération des lignes de rapport
-		AH_MainController.getReportLine("Bonus", ["<b>Collectés:</b>", bonus_collected, "<b>Gains:</b>", AH_MainController.intToHumanReadableString(bonus_income) + " Brouzoufs"], div_content);
-		AH_MainController.getReportLine("Petits astéroïdes", ["<b>Détruits:</b>", tiny_ast_destroyed, "<b>Gains:</b>", AH_MainController.intToHumanReadableString(tiny_ast_income) + " Brouzoufs"], div_content);
-		if (level_failed)
-			AH_MainController.getReportLine("Pertes", ["<b>Non récupérés:</b>", `${Math.round((1 - AH_Shop.getShopAttributeValue("REC")) * 100)}%`], div_content);
-
-		// Total
-		let total_income = level_failed
-						 ? Math.floor((bonus_income + tiny_ast_income) * AH_Shop.getShopAttributeValue("REC"))
-						 : bonus_income + tiny_ast_income;
-		let divTotal = document.createElement("DIV");
-		divTotal.classList.add("report-total");
-		divTotal.classList.add("report-text");
-		divTotal.innerHTML = "<b>Total:</b> " + AH_MainController.intToHumanReadableString(total_income) + " Brouzoufs";
-		div_content.appendChild(divTotal);
-
-		// Création de la <div> contenant les boutons
-		let div_btn = document.createElement("DIV");
-		div_btn.classList.add("dialog-footer");
-
-		// Création du bouton de fermeture
-		let btn = document.createElement("INPUT");
-		btn.setAttribute("type", "button");
-		btn.classList.add("start-wave-button");
-		btn.value = "Bien reçu";
-		btn.addEventListener("click", ()=> {
-			popup.closeModal();
-			setTimeout(function () { AH_Shop.show(); }, 750);
+			// Cas particulier de la section pertes: uniquement présentée en cas de crash du vaisseau
+			if (level_failed)
+				document.getElementById("loss_rate").innerHTML = Math.round((1 - AH_Shop.getShopAttributeValue("REC")) * 100);
+			else {
+				let lossSectionDivs = document.getElementsByClassName("loss-section");
+				for (let div of lossSectionDivs)
+					div.style.opacity = 0;
+			}
+			
+			// Application de la fonction de fermeture au bouton
+			document.getElementById("btn_close").addEventListener("click", ()=> {
+				popup.closeModal();
+				setTimeout(function () { AH_Shop.show(); }, 750);
+			});
 		});
-
-		// Ajout des boutons à la boîte de dialogue et affichage
-		div_btn.appendChild(btn);
-		popup.appendToContent(div_btn);
 		document.body.appendChild(popup);
-
-		// Et bien sûr, on met à jour le scope du controller principal
-		AH_MainController.scope.game.money += total_income;
-	}
-
-	/**
-	 * Construit l'affichage d'une ligne de rapport et l'injecte dans targetElement
-	 * textIndexes est la liste des indices de colonne auxquelles appliquer le style "report-text"
-	 */
-	static getReportLine(titre, cellContents, targetElement, textIndexes=[0,2]) {
-		let divTitre = document.createElement("DIV");
-		divTitre.classList.add("report-title");
-		divTitre.classList.add("report-text");
-		divTitre.innerHTML = titre;
-		targetElement.appendChild(divTitre);
-		let ligne = document.createElement("DIV");
-		ligne.classList.add("report-line");
-		targetElement.appendChild(ligne);
-		let index = 0;
-		for (let content of cellContents) {
-			let cell = document.createElement("DIV");
-			if (textIndexes.indexOf(index) != -1)
-				cell.classList.add("report-text");
-			cell.innerHTML = content;
-			ligne.appendChild(cell);
-			index++;
-		}
 	}
 
 	/**
@@ -448,32 +434,25 @@ class AH_MainController {
 	 */
 	static showParameters() {
 		AH_MainController.scope.controls.paused = true;
-		/*let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false);
+		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false, "tpl_parameters.html", function() {
 
-		// Ajout de la div de contenu de la popup
-		let div_content = document.createElement("DIV");
-		div_content.classList.add("dialog-body");
-		popup.appendToContent(div_content);
+			// Binding de l'autorisation pour les cookies
+			new RS_Binding({
+				object: AH_MainController.scope.game,
+				property: "cookies_accepted"
+			}).addBinding(popup.querySelector("#cookies_accepted"), "checked", "change");
 
-		
+			// Binding de la sensibilité radiale
+			new RS_Binding({
+				object: AH_MainController.scope.game,
+				property: "radial_sensivity"
+			}).addBinding(popup.querySelector("#radial_sensivity"), "value", "change");
 
-		// Création de la <div> contenant les boutons
-		let div_btn = document.createElement("DIV");
-		div_btn.classList.add("dialog-footer");
-
-		// Création du bouton de fermeture
-		let btn = document.createElement("INPUT");
-		btn.setAttribute("type", "button");
-		btn.classList.add("start-wave-button");
-		btn.value = "Bien reçu";
-		btn.addEventListener("click", ()=> {
-			popup.closeModal();
-			setTimeout(function () { AH_Shop.show(); }, 750);
+			// Gestion du clic sur les boutons de sauvegarde et de chargement
+			popup.querySelector("#btn_save").addEventListener("click", ()=> { AH_MainController.saveGame(); });
+			popup.querySelector("#btn_load").addEventListener("click", ()=> { AH_MainController.loadGame(); });
+			popup.querySelector("#btn_close").addEventListener("click", ()=> { popup.closeModal(); });
 		});
-
-		// Ajout des boutons à la boîte de dialogue et affichage
-		div_btn.appendChild(btn);
-		popup.appendToContent(div_btn);
-		document.body.appendChild(popup);*/
+		document.body.appendChild(popup);
 	}
 }
