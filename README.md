@@ -2,7 +2,7 @@
 Jeu "home made" de destruction d'astéroïdes
 
 ## Pitch
-En l'année 2074, la race humaine doit fuir la Terre, devenue invivable suite à ses écarts de conduite. Ayant vu arriver la catastrophe, l'humanité est tout de même parvenue à rendre possible les vols spaciaux habités de longue durée.
+En l'année 2074, la race humaine doit fuir la Terre, devenue invivable suite à une catastrophe écologique. L'ayant vu arriver, l'humanité est tout de même parvenue à développer des technologies rendant possible les vols spaciaux habités de longue durée.
 
 Seule une infime partie de la population mondiale a pu fuir l'apocalypse, mais l'humanité a survécu: depuis à présent 5 ans, le _StarShip Hope_ parcourt l'univers, portant à son bord 50 000 colons en quête d'un nouveau foyer.
 
