@@ -5,13 +5,10 @@
 // 
 //  - Modifier les paramètres afin que le jeu soit plus dynamique, dès le départ
 //
-//  - Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
-//  	* En profiter pour demander à l'utilisateur s'il choisit d'accepter les cookies (ce qui évitera de le demader à chaque sauvegarde)	
+//	- Trouver un illustrateur pour:
+//  	* Mettre en place une introduction, présentant le pitch
+//	    * Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
 //  	
-//  - Mettre en place une introduction, présentant le pitch:
-//  	* Trouver un illustrateur (pour le pitch c'est mieux ^^)
-//  	* Dans un premier temps, un écran titre serait suffisant
-// 
 //  - Mettre en place un second mode de jeu "Arcade", le mode de jeu d'origine serait bâptisé "Mode Infini":
 //  	* Pitch (alternative du pitch d'origine):
 //  			Une armée d'aliens belliqueux prend en chasse le StarShip Hope. Malheureusement, les réserves de minerais 
@@ -42,9 +39,6 @@
 
 /**
  * EN COURS:
- *   Rendre ANGLE_STEP paramétrable via un curseur "sensibilité radiale"
- *   Un bouton et une popup paramètres seront réalisés dans ce cadre
- *  => Reste à migrer AH_Shop.show() au format template  
  */
 
 // Constantes
