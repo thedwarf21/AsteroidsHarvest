@@ -57,8 +57,7 @@ class RS_Hitbox {
 		let deltaX = Math.abs(this.x - hitbox.x),
 			deltaY = Math.abs(this.y - hitbox.y),
 			distance = (deltaX**2 + deltaY**2) ** 0.5;
-
-		console.log(deltaX, deltaY, distance, );
+			
 		// Si la distance entre les centres des deux disques est inférieure à la somme de leurs rayons, c'est qu'ils se chevauchent
 		return (distance < this.radius + hitbox.radius);
 	}
