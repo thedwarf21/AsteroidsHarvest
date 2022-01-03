@@ -1,6 +1,6 @@
 /*** Le HUD n'est visible que sur appareils mobiles ***/
 .hud { opacity: 0; }
-@media landscape (max-width:1024px) { 
+@media screen and (max-width:1024px) { 
 	.hud { opacity: 0.7; } 
 }
 
