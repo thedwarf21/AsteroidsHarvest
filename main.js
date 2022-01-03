@@ -262,26 +262,26 @@ class AH_MainController {
 		document.querySelector('.button.right').addEventListener('mousedown', 		function(e) { controls.rightPressed = true; });
 		document.querySelector('.button.right').addEventListener('mouseup', 		function(e) { controls.rightPressed = false; });
 		document.querySelector('.button.right').addEventListener('mouseleave', 		function(e) { controls.rightPressed = false; });
-		document.querySelector('.button.right').addEventListener('touchstart', 		function(e) { controls.leftPressed = true; });
-		document.querySelector('.button.right').addEventListener('touchend', 		function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.right').addEventListener('touchstart', 		function(e) { controls.rightPressed = true; });
+		document.querySelector('.button.right').addEventListener('touchend', 		function(e) { controls.rightPressed = false; });
 		
 		document.querySelector('.button.forward').addEventListener('mousedown', 	function(e) { controls.upPressed = true; });
 		document.querySelector('.button.forward').addEventListener('mouseup', 		function(e) { controls.upPressed = false; });
 		document.querySelector('.button.forward').addEventListener('mouseleave', 	function(e) { controls.upPressed = false; });
-		document.querySelector('.button.forward').addEventListener('touchstart', 	function(e) { controls.leftPressed = true; });
-		document.querySelector('.button.forward').addEventListener('touchend', 		function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.forward').addEventListener('touchstart', 	function(e) { controls.upPressed = true; });
+		document.querySelector('.button.forward').addEventListener('touchend', 		function(e) { controls.upPressed = false; });
 		
 		document.querySelector('.button.backward').addEventListener('mousedown', 	function(e) { controls.downPressed = true; });
 		document.querySelector('.button.backward').addEventListener('mouseup', 		function(e) { controls.downPressed = false; });
 		document.querySelector('.button.backward').addEventListener('mouseleave', 	function(e) { controls.downPressed = false; });
-		document.querySelector('.button.backward').addEventListener('touchstart', 	function(e) { controls.leftPressed = true; });
-		document.querySelector('.button.backward').addEventListener('touchend', 	function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.backward').addEventListener('touchstart', 	function(e) { controls.downPressed = true; });
+		document.querySelector('.button.backward').addEventListener('touchend', 	function(e) { controls.downPressed = false; });
 		
 		document.querySelector('.button.fire').addEventListener('mousedown', 		function(e) { controls.spacePressed = true; });
 		document.querySelector('.button.fire').addEventListener('mouseup', 			function(e) { controls.spacePressed = false; });
 		document.querySelector('.button.fire').addEventListener('mouseleave', 		function(e) { controls.spacePressed = false; });
-		document.querySelector('.button.fire').addEventListener('touchstart', 		function(e) { controls.leftPressed = true; });
-		document.querySelector('.button.fire').addEventListener('touchend', 		function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.fire').addEventListener('touchstart', 		function(e) { controls.spacePressed = true; });
+		document.querySelector('.button.fire').addEventListener('touchend', 		function(e) { controls.spacePressed = false; });
 		
 		document.querySelector('.hud .pause').addEventListener('click', 			function(e) { AH_MainController.togglePause(); });
 		
