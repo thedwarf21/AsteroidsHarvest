@@ -25,8 +25,8 @@ class MobileGameElement extends HTMLDivElement {
     if (x != undefined && y != undefined) {
       this.x = x;
       this.y = y;
-      this.style.left = this.x + "px";
-      this.style.top = this.y + "px";
+      this.style.left = AH_MainController.ah_viewport.getCssValue(this.x, false);
+      this.style.top = AH_MainController.ah_viewport.getCssValue(this.y, true);
     }
   }
 
@@ -45,24 +45,25 @@ class MobileGameElement extends HTMLDivElement {
     //--------------------------------------------------------
     // true  --> suppression de l'élément
     // false --> on ramène l'élément au bord opposé
+    let window_height = AH_MainController.ah_viewport.VIRTUAL_HEIGHT,
+        window_width = AH_MainController.ah_viewport.VIRTUAL_WIDTH;
     if (removeOnScreenLeave) {
-      let shot_size = SHOT_BASE_SIZE * this.power;
-      if (this.y > WINDOW_HEIGHT || this.y < -shot_size || this.x > WINDOW_WIDTH || this.x < -shot_size) 
+      if (this.y > window_height || this.y < -this.pixel_size || this.x > window_width || this.x < -this.pixel_size) 
         this.remove();
     } else {
-      if (this.y > WINDOW_HEIGHT) 
-        this.y -= (WINDOW_HEIGHT + this.pixel_size);
+      if (this.y > window_height) 
+        this.y -= (window_height + this.pixel_size);
       if (this.y < -this.pixel_size) 
-        this.y += (WINDOW_HEIGHT + this.pixel_size);
-      if (this.x > WINDOW_WIDTH) 
-        this.x -= (WINDOW_WIDTH + this.pixel_size);
+        this.y += (window_height + this.pixel_size);
+      if (this.x > window_width) 
+        this.x -= (window_width + this.pixel_size);
       if (this.x < -this.pixel_size) 
-        this.x += (WINDOW_WIDTH + this.pixel_size);
+        this.x += (window_width + this.pixel_size);
     }
 
     // Application des nouvelles coordonnées
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
+    this.style.top = AH_MainController.ah_viewport.getCssValue(this.y, true);
+    this.style.left = AH_MainController.ah_viewport.getCssValue(this.x, false);
   }
 
   /**
@@ -85,13 +86,18 @@ class MobileGameElement extends HTMLDivElement {
 
     // On applique le coefficient pour obtenir la marge 
     // marge de centrage => réduction du rayon = <rayon_hitbox_de_base> - <rayon_hitbox_souhaité>
-    let margin = this.hitbox_size_coef
-               ? this.pixel_size/2 * (1 - this.hitbox_size_coef)
-               : this.pixel_size/2;
-    let cssSize = `calc(100% - ${margin * 2}px)`;
-    div.style.margin = `${margin}px`;
+    let margin, cssSize;
+    if (this.hitbox_size_coef) {
+      margin = this.pixel_size/2 * (1 - this.hitbox_size_coef);
+      cssSize = `calc(100% - ${AH_MainController.ah_viewport.getCssValue(margin * 2, true)})`;
+    } else {
+      margin = 0;
+      cssSize = "100%";
+    }
+    div.style.margin = AH_MainController.ah_viewport.getCssValue(margin, true);
     div.style.height = cssSize;
     div.style.width = cssSize;
+    div.style.opacity = AH_MainController.scope.game.showHitboxes ? "1" : "0"; // Afficher/cacher selon paramétrage utilisateur
     this.appendChild(div);
   }
 
@@ -124,7 +130,7 @@ customElements.define('ah-js-mobile-element', MobileGameElement, { extends: 'div
 //   Seul attribut nécessaire : la référence à l'objet contenant les propriétés pour mise à jour
 // automatique de l'interface.
 //---------------------------------------------------------------------------------------------------
-// Dans le DOM ==> <div class="game spaceship"></div>, si créé directement via la classe AH_Spaceship
+// Dans le DOM ==> <div class="game spaceship"></div>
 //---------------------------------------------------------------------------------------------------
 /* Usage JS uniquement */
 class AH_Spaceship extends MobileGameElement {
@@ -153,14 +159,13 @@ class AH_Spaceship extends MobileGameElement {
     this.deltaX = 0;
     this.deltaY = 0;
     this.pixel_size = SPACESHIP_SIZE;
-    this.x = (WINDOW_WIDTH - SPACESHIP_SIZE) / 2;
-    this.y = (WINDOW_HEIGHT - SPACESHIP_SIZE) / 2;
-    this.style.top = this.y + "px";
-    this.style.left = this.x + "px";
+    this.x = (AH_MainController.ah_viewport.VIRTUAL_WIDTH - SPACESHIP_SIZE) / 2;
+    this.y = (AH_MainController.ah_viewport.VIRTUAL_HEIGHT - SPACESHIP_SIZE) / 2;
+    this.style.top = AH_MainController.ah_viewport.getCssValue(this.y, true);
+    this.style.left = AH_MainController.ah_viewport.getCssValue(this.x, false);
 
-    // Si les préférences utilisateur le spécifient, on affiche la HitBox
-    if (AH_MainController.scope.game.showHitboxes)
-      super.addVisualHitBox();
+    // On crée la hitbox visuelle
+    super.addVisualHitBox();
   }
 
   /***********************************************************************
@@ -218,7 +223,8 @@ customElements.define('ah-js-spaceship', AH_Spaceship, { extends: 'div' });
 //---------------------------------------------------------------------------------------------------
 //                                          Tir
 //---------------------------------------------------------------------------------------------------
-// Le tir s'auto retire du DOM, à sa sortie de l'écran ou lors d'un impact
+//   Le tir s'auto retire du DOM, à sa sortie de l'écran ou lors d'un impact, 
+// de même qu'il s'y auto-injecte lors de sa création.
 //---------------------------------------------------------------------------------------------------
 // Dans le DOM ==> <div class="game shot"></div>
 //---------------------------------------------------------------------------------------------------
@@ -238,9 +244,11 @@ class AH_Shot extends MobileGameElement {
     // Construction HTML
     super(x, y);
     this.classList.add("shot");
+
     this.pixel_size = SHOT_BASE_SIZE * power;
-    this.style.width = this.pixel_size + "px";
-    this.style.height = this.pixel_size + "px";
+    let cssSize = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
+    this.style.width = cssSize;
+    this.style.height = cssSize;
 
     // Initialisation des données internes au composant
     this.power = power;
@@ -278,6 +286,9 @@ customElements.define('ah-js-shot', AH_Shot, { extends: 'div' });
 //   L'asteroïde reçoit une vitesse horizontale, une vitesse verticale ainsi qu'une vitesse de 
 // rotation aléatoires, lors de sa création.
 //   Ces attributs sont modifiés lors d'un impact avec un projectile (transfert d'énergie cynétique)
+//   
+//   L'asteroïde s'auto retire du DOM, lorsqu'il explose, de même qu'il s'y auto-injecte 
+// lors de sa création.
 //---------------------------------------------------------------------------------------------------
 // Dans le DOM ==> <div class="game asteroid"></div>
 //---------------------------------------------------------------------------------------------------
@@ -319,7 +330,7 @@ class AH_Asteroid extends MobileGameElement {
     this.life_bar = document.createElement("DIV");
     this.life_bar.classList.add("life-bar");
     this.life_bar.classList.add("game");
-    this.life_bar.style.width = this.pixel_size + "px";
+    this.life_bar.style.width = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
     
     // Partie colorée de la barre de vie
     this.life_ink = document.createElement("DIV");
@@ -342,12 +353,11 @@ class AH_Asteroid extends MobileGameElement {
   __init(size, x, y) {
 
     let pixel_size = BASE_AST_SIZE * size;
-    this.style.width = pixel_size + "px";
-    this.style.height = pixel_size + "px";
+    this.style.width = AH_MainController.ah_viewport.getCssValue(pixel_size, true);
+    this.style.height = AH_MainController.ah_viewport.getCssValue(pixel_size, true);
 
-    // Si le paramétrage du jeu le spécifie, on affiche la HitBox => aide visuelle au paramétrage
-    if (AH_MainController.scope.game.showHitboxes)
-      this.addVisualHitBox();
+    // On crée la hitbox visuelle
+    super.addVisualHitBox();
 
     // Si les coordonnées sont passées en paramètre, on les initialise sinon c'est aléatoire
     if (x == undefined && y == undefined) {
@@ -356,15 +366,15 @@ class AH_Asteroid extends MobileGameElement {
       // La position sur ces bandes est aléatoire : 0 < x < 200. Si 0 < x < 100 => gauche, sinon droite.
       // Ces cooredonnées représentent le milieu des astéroïdes. Il faut donc en déduire les propriétés left et top.
       let x = AH_MainController.entierAleatoire(AST_SPAWN_ZONE_WIDTH * 2 - 1); // *2 pour gérer les deux bandes et -1 pour avoir un nombre pair de valeurs possibles (prise en compte de la valeur 0)
-      let y = AH_MainController.entierAleatoire(WINDOW_HEIGHT);
+      let y = AH_MainController.entierAleatoire(AH_MainController.ah_viewport.VIRTUAL_HEIGHT);
 
       // Placement de l'astéroïde côté gauche ou côté droit selon x (première tranche à gauche, seconde à droite)
       this.x = x < AST_SPAWN_ZONE_WIDTH
              ? x - (pixel_size / 2)
-             : x - (pixel_size / 2) + AST_SPAWN_ZONE_WIDTH + (WINDOW_WIDTH - (AST_SPAWN_ZONE_WIDTH * 2));
+             : x - (pixel_size / 2) + AST_SPAWN_ZONE_WIDTH + (AH_MainController.ah_viewport.VIRTUAL_WIDTH - (AST_SPAWN_ZONE_WIDTH * 2));
       this.y = y - (pixel_size / 2);
-      this.style.top = this.y + "px";
-      this.style.left = this.x + "px";
+      this.style.top = AH_MainController.ah_viewport.getCssValue(this.y, true);
+      this.style.left = AH_MainController.ah_viewport.getCssValue(this.x, false);
     }
 
     // Application de la rotation aléatoire, de la vie et des aspects graphiques liés aux corrdonnées afin d'éviter les collisions ramdom lors du pop
@@ -390,8 +400,8 @@ class AH_Asteroid extends MobileGameElement {
     if (this.display_angle < 0) this.display_angle += 360;
 
     // Application des nouvelles coordonnées et de l'angle
-    this.life_bar.style.top = this.y + "px";
-    this.life_bar.style.left = this.x + "px";
+    this.life_bar.style.top = AH_MainController.ah_viewport.getCssValue(this.y, true);
+    this.life_bar.style.left = AH_MainController.ah_viewport.getCssValue(this.x, false);
     this.style.transform = "rotateZ(" + this.display_angle + "deg)";
   }
 
@@ -450,7 +460,8 @@ customElements.define('ah-js-asteroid', AH_Asteroid, { extends: 'div' });
 //---------------------------------------------------------------------------------------------------
 //                                      Bonus
 //---------------------------------------------------------------------------------------------------
-//   Le bonus reçoit une vitesse horizontale et une vitesse verticale, lors de sa création.
+//  Le bonus s'auto retire du DOM, lorsque son temps de présence est écoulé, 
+// de même qu'il s'y auto-injecte lors de sa création.
 //---------------------------------------------------------------------------------------------------
 // Dans le DOM ==> <div class="game bonus"></div>
 //---------------------------------------------------------------------------------------------------
@@ -479,8 +490,8 @@ class AH_Bonus extends MobileGameElement {
    *****************************/
   __init() {
     this.pixel_size = BONUS_SIZE;
-    this.style.width = this.pixel_size + "px";
-    this.style.height = this.pixel_size + "px";
+    this.style.width = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
+    this.style.height = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
     this.deltaX = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.deltaY = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.timeRemaining = BONUS_LIFE_TIME;
@@ -497,7 +508,7 @@ class AH_Bonus extends MobileGameElement {
     if (this.timeRemaining == BONUS_BLINK_START_AT)
       this.classList.add("blink");
     if (this.timeRemaining == 0) 
-      this.destroy();
+      this.remove();
   }
 }
 customElements.define('ah-js-bonus', AH_Bonus, { extends: 'div' });

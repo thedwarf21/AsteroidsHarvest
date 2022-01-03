@@ -9,7 +9,29 @@
 //
 //	- Trouver un illustrateur pour:
 //  	* Mettre en place une introduction, présentant le pitch 
-//  		(techniquement, ça peut être marrant à faire. Surtout sous la forme d'une classe permettant de gérer génériquement les cinématique)
+//  		-> juste besoin de quelques visuels pour coder une une intro sympa
+//  		-> créer une classe javascript permettant de gérer et afficher génériquement les cinématiques, sur la base d'un fichier .json
+//  			=> le fichier JSON déclarera une liste d'objets contenant chacun les paramètres d'une séquence, sous la forme:
+//  					{
+//  						duration_ms: 15000,
+//  						remove_from_frame: ['intro_0_1', 'intro_0_2', 'intro_0_2'], /* images à supprimer en début de la séquence */
+//  						add_to_frame: [{											/* images à créer en début de séquence */
+//			  						id: 'intro_1_1',
+//  								url: 'intro_1_1.png',
+//  								top: 5vh,  					/* une image en haut à gauche */
+//  								left: 18vh,
+//  								width: 25vh,
+//  								ratio: 245/138 				/* dimensions réelles de l'image -> L/H */
+//  							}, {
+//			  						image_id: 'intro_1_2',
+//  								image_url: 'intro_1_2.png',
+//  								top: 59vh,					/* une image en bas à droite */
+//  								left: 120vh /* au minimum, viewWidth = 4/3 * viewHeight -> pour ne jamais sortir de l'écran, left + width < 133vh */
+//  								width: 10vh,
+//  								ratio: 52/187
+//  							}]
+//  					}
+//  			=> clic -> passer à la séquence suivante / fermer, si pas de séquence suivante
 //	    * Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
 //  	
 //  - Mettre en place un second mode de jeu "Arcade", le mode de jeu d'origine serait bâptisé "Mode Infini":
@@ -26,31 +48,26 @@
 //  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
 //  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
 // 
-//------------------------------------------ Optimisations, maintenabilité et scallabilité ------------------------------------------
-// 
-//  Rien de prévu ... pour le moment ;) 
 
 /**
  * Modifications apportées dans le dernier patch:
- *   - Ajout de la possibilité d'afficher les hitbox via les préférences utilisateur
- *   - Correction de bug: la pause ne s'enlevait pas, à la fermeture d'une fenêtre des paramètres ouverte en cours de niveau
- *   - Abandon du <ah-sapaceship> en tant que composant HTML utilisable dans les templates: complique les choses inutilement
- *   - Abandon de scope.asteroids et scope.bonuses pour la même raison 
- *   		=> mise en place d'accesseurs pour les éléments du jeu, au sein de AH_MainController
- *   - Création de la classe RS_Hitbox dévolue aux tests de collision
- *   - Création de la classe MobileGameElement => classe mère de tous les éléments mobiles du jeu
- *   	* Embarque le code commun à tous les composants: 
- *   		# placements et déplacements générique
- *   		# explosion générique
- *   		# génération de l'objet RS_Hitbox correspondant à this
- *   - Préfixage en '__' des méthodes réservées à un usage interne à la classe (mot clé private absent du lexique javascript)
- *   		
- * Les cinq derniers points étant de la "mise au propre" du code: 
- * Ce genre d'opération est chronophage sur le moment, mais le temps investi est vite amorti 
- * (gain de temps et d'énergie sur les corrections de bugs et évolutions à venir) 
+ *  
+ *  - Mettre sur pause ouvre les paramètres
+ *  - Compatibilité smartphone:
+ *  	* On conserve le système de coordonnées (indispensable, lorsqu'il est question de gérer des angles)
+ *  		-> les coordonnées deviennent virtuelles
+ *  		-> coordonnées CSS en pourcentage
+ *      * Ajout de la classe RS_ViewPortCompatibility au game engine pour gérer la problématique de positionnement réel
+ *        en fonction des coordonnées virtuelles et des dimensions de l'écran virtuel. 
+ *  	* Forcer le mode "landscape", sur appareils mobiles (non testé, donc pas sûr que cela fonctionne)
+ *  	* Passage en FULL responsive et fullscreen (le jeu utilise désormais tout l'espace disponible et adapte ses proportions)
+ *  		-> dimensions des composants en vh (pourcentage de la hauteur de l'écran)
+ *  		-> positionnement via RS_ViewPortCompatibility
+ * 		* Ajout d'un HUD ne s'affichant que sur appareils mobiles (largeur de l'écran en lanscape < 1024px)
  */
 
-// Constantes
+//------------- Constantes --------------
+// Contenus de boîtes de dialogue
 const QUESTION_COOKIES = `<p>Le jeu se sauvegarde sous forme de cookie.</p>
 						  <p>Nous n'y stockerons aucune donnée sensible: seulement votre progression dans le jeu.</p>
 						  <p>Nous devons simplement vous demander confirmation avant d'effectuer cette opération</p>
@@ -59,12 +76,14 @@ const SAVE_ERROR_MSG = `<p>Le système de sauvegarde de ce jeu utilise les cooki
 						<p>Afin que celui-ci fonctionne, il est donc nécessaire de les accepter.</p>
 						<p>Pour ce faire, il vous suffit de cocher la case portant l'intitulé "Accepter les cookies:"
 						puis de confirmer en cliquant sur le bouton vert indiquant "Oui, je le veux"</p>`;
+
+// Dimensions de la fenêtre virtuelle (la largeur est calculée selon la hauteur et le ratio de l'écran)
+const WINDOW_HEIGHT = 600;
+
+// Paramétrage
 const TIME_INTERVAL = 50;
 const ANGLE_STEP = 11.25;
 const SAVE_EXPIRATION_DAYS = 400;	// Nombre de jours d'expiration appliqués au cookie de sauvegarde
-
-const WINDOW_WIDTH = 800;
-const WINDOW_HEIGHT = 600;
 
 const SPACESHIP_SIZE = 50;
 const SHOT_BASE_SIZE = 5;
@@ -104,6 +123,7 @@ class AH_MainController {
 	static get asteroids() 	{ return document.getElementsByClassName("asteroid"); }
 	static get shots() 		{ return document.getElementsByClassName("shot"); }
 	static get bonusItems()	{ return document.getElementsByClassName("bonus"); }
+	static get hitboxes()	{ return document.getElementsByClassName("hitbox"); }
 
 	// Fonction d'initialisation du controller principal
 	static init() {
@@ -194,29 +214,16 @@ class AH_MainController {
 			let controls = AH_MainController.scope.controls;
 			if (e.code == "ArrowDown")
 				controls.downPressed = true;
-			if (e.code == "ArrowUp")
+			else if (e.code == "ArrowUp")
 				controls.upPressed = true;
-			if (e.code == "ArrowLeft")
+			else if (e.code == "ArrowLeft")
 				controls.leftPressed = true;
-			if (e.code == "ArrowRight")
+			else if (e.code == "ArrowRight")
 				controls.rightPressed = true;
-			if (e.code == "Space")
+			else if (e.code == "Space")
 				controls.spacePressed = true;
-			if (e.code == "KeyP") {
-				if (controls.paused) {
-					let pauseDiv = document.getElementById("pause-div");
-					pauseDiv.remove();
-					controls.paused = false;
-				} else {
-					let pauseDiv = document.createElement("DIV");
-					pauseDiv.id = "pause-div";
-					let pauseSpan = document.createElement("SPAN");
-					pauseSpan.innerHTML = "||";
-					pauseDiv.appendChild(pauseSpan);
-					document.body.appendChild(pauseDiv);
-					controls.paused = true;
-				}
-			}
+			else if (e.code == "KeyP") 
+				AH_MainController.togglePause();
 		});
 		window.addEventListener('keyup', function(e) {
 			let controls = AH_MainController.scope.controls;
@@ -234,6 +241,46 @@ class AH_MainController {
 
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
+	}
+
+	/**
+	 * Appelée lorsque la page est chargée
+	 */
+	static onLoad() {
+
+		// Création du gestionnaire de compatibilité d'affichage 
+		AH_MainController.ah_viewport = new RS_ViewPortCompatibility("y", WINDOW_HEIGHT);
+
+		// Ajout des listeners sur les boutons du HUD
+		let controls = AH_MainController.scope.controls;
+		document.querySelector('.button.left').addEventListener('mousedown', 		function(e) { controls.leftPressed = true; });
+		document.querySelector('.button.left').addEventListener('mouseup', 			function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.left').addEventListener('mouseleave', 		function(e) { controls.leftPressed = false; });
+		document.querySelector('.button.right').addEventListener('mousedown', 		function(e) { controls.rightPressed = true; });
+		document.querySelector('.button.right').addEventListener('mouseup', 		function(e) { controls.rightPressed = false; });
+		document.querySelector('.button.right').addEventListener('mouseleave', 		function(e) { controls.rightPressed = false; });
+		document.querySelector('.button.forward').addEventListener('mousedown', 	function(e) { controls.upPressed = true; });
+		document.querySelector('.button.forward').addEventListener('mouseup', 		function(e) { controls.upPressed = false; });
+		document.querySelector('.button.forward').addEventListener('mouseleave', 	function(e) { controls.upPressed = false; });
+		document.querySelector('.button.backward').addEventListener('mousedown', 	function(e) { controls.downPressed = true; });
+		document.querySelector('.button.backward').addEventListener('mouseup', 		function(e) { controls.downPressed = false; });
+		document.querySelector('.button.backward').addEventListener('mouseleave', 	function(e) { controls.downPressed = false; });
+		document.querySelector('.button.fire').addEventListener('mousedown', 		function(e) { controls.spacePressed = true; });
+		document.querySelector('.button.fire').addEventListener('mouseup', 			function(e) { controls.spacePressed = false; });
+		document.querySelector('.button.fire').addEventListener('mouseleave', 		function(e) { controls.spacePressed = false; });
+		document.querySelector('.hud .pause').addEventListener('click', 			function(e) { AH_MainController.togglePause(); });
+		
+		// Ouverture du magasin
+		AH_Shop.show();
+	}
+
+	/**
+	 * Met ou enlève la pause (construit / détruit l'écran de pause)
+	 */
+	static togglePause() {
+		let controls = AH_MainController.scope.controls;
+		if (!controls.paused)
+			AH_MainController.showParameters();
 	}
 
 	/**
@@ -450,7 +497,7 @@ class AH_MainController {
 	static showParameters() {
 		let was_paused = AH_MainController.scope.controls.paused;
 		AH_MainController.scope.controls.paused = true;
-		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false, "tpl_parameters.html", function() {
+		let popup = new RS_Dialog("report_dialog", "Paramètres utilisateur", [], [], [], false, "tpl_parameters.html", function() {
 
 			// Binding de l'autorisation pour les cookies
 			new RS_Binding({
@@ -462,7 +509,10 @@ class AH_MainController {
 			new RS_Binding({
 				object: AH_MainController.scope.game,
 				property: "showHitboxes"
-			}).addBinding(popup.querySelector("#show_hitboxes"), "checked", "change");
+			}).addBinding(popup.querySelector("#show_hitboxes"), "checked", "change", function() {
+				for (let hitbox of AH_MainController.hitboxes)
+					hitbox.style.opacity = AH_MainController.scope.game.showHitboxes ? "1" : "0";
+			});
 
 			// Binding de la sensibilité radiale
 			new RS_Binding({

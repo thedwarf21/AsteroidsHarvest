@@ -3,8 +3,8 @@
  * aux coordonnées relatives à la .game-window déclarée dans styles.css                          *
  *************************************************************************************************/
 .game {
-	margin-left: calc(50vw - 400px);
-    margin-top: calc(50vh - 300px);
+	/*margin-left: calc(50vw - 400px);
+    margin-top: calc(50vh - 300px);*/
 }
 
 /********************
@@ -14,8 +14,8 @@
 	background-image: url('spaceship.png');
 	background-size: 100% 100%;
 	position: absolute;
-	height: 50px;
-	width: 50px;
+	height: 8vh; /* taille en px vituels convertie en vh => taille_vh = 100 / (hauteur_jeu_px / taille_vaisseau_px)  */
+	width: 8vh;
 	transform-origin: center;
 }
 
@@ -40,7 +40,7 @@
 	box-shadow: 0 0 3px rgb(255 255 255 / 50%);
 	background-color: transparent;
 	text-align: left;
-	height: 5px;
+	height: 0.5vh;
 	position: absolute;
 	transform: translateY(-10px);
 }
@@ -54,7 +54,7 @@
  * Hitbox *
  **********/
 .hitbox {
-	background: radial-gradient(circle at center, black 0%, rgba(255,255,255,0.6) 1%, rgba(255,255,255,0.6) 99%, white 100%);
+	background: radial-gradient(circle at center, darkgreen 1%, rgba(255,255,255,0.6) 2%, rgba(255,255,255,0.6) 99%, white 100%);
 	border-radius: 50%;
 }
 

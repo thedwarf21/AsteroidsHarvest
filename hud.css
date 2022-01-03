@@ -1,0 +1,55 @@
+/*** Le HUD n'est visible que sur appareils mobiles ***/
+.hud { opacity: 0; }
+@media landscape (max-width:1024px) { 
+	.hud { opacity: 0.7; } 
+}
+
+.hud .button {
+	position: absolute;
+	border-radius: 50%;
+	background: radial-gradient(circle at center, white 10%, transparent);
+	width: 10vh;
+	height: 10vh;
+}
+
+.hud .button.left {
+	bottom: 17.5vh;
+	left: 5vh;
+}
+
+.hud .button.right {
+	bottom: 17.5vh;
+	left: 30vh;
+}
+
+.hud .button.forward {
+	bottom: 30vh;
+	left: 17.5vh;
+}
+
+.hud .button.backward {
+	bottom: 5vh;
+	left: 17.5vh;
+}
+
+.hud .button.fire {
+	height: 17.5vh;
+	width: 17.5vh;
+	bottom: 5vh;
+	right: 5vh;
+}
+
+.hud .pause {
+	height: 17.5vh;
+	width: 17.5vh;
+	top: 5vh;
+	right: 5vh;
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	color: black;
+	font-family: Impact;
+	font-size: 10vh;
+}

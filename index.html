@@ -4,11 +4,13 @@
     <base href="" />
     <meta charset="utf8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="spaceship.png" />
     <title>Asteroids Harvest</title>
 
     <!-- Styles et fonts -->
     <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <link rel="stylesheet" type="text/css" href="hud.css"/>
     <link rel="stylesheet" type="text/css" href="rs_dialog.css"/>
     <link rel="stylesheet" type="text/css" href="AH_components.css"/>
     
@@ -28,23 +30,15 @@
   </head>
 
   <!-- Corps de la page -->
-  <body onload="AH_Shop.show()">
-    <div class="page" id="page">
-      <div class="opaque-panel panel-ns">
-        <button class="paramters button" onclick="AH_MainController.showParameters()">
-          <img src="paramètres.svg" />
-        </button>
-      </div>
-      <div class="middle-panel">
-        <div class="opaque-panel panel-we"></div>
-        <div class="game-window" id="game-window">
-          
-          <!-- C'est ici que vont venir s'intégrer les éléments du jeu (vaisseau, asteroides, tirs et bonus) -->
-
-        </div>
-        <div class="opaque-panel panel-we"></div>
-      </div>
-      <div class="opaque-panel panel-ns"></div>
+  <body onload="AH_MainController.onLoad()">
+    <div class="game-window" id="game-window"></div>
+    <div class="hud">
+      <div class="button left" ></div>
+      <div class="button right"></div>
+      <div class="button forward"></div>
+      <div class="button backward"></div>
+      <div class="button fire"></div>
+      <div class="button pause">| |</div>
     </div>
   </body>
 </html>

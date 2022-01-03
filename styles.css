@@ -1,51 +1,25 @@
-body { margin: 0; }
-
-/** Div prenant toute la page et affichant le jeu, centré */
-.page {
-	height: 100%;
-	width: 100%;
-	position: absolute;
-	bottom: 0;
-}
-
-/** Panneaux opaques au premier plan, tout autour du jeu, pour éviter les sorties d'écran */
-.opaque-panel { background-color: white; }
-.middle-panel {
-	display: flex;
-	flex-direction: row;
-	justify-content: start;
-}
-.panel-ns {
-	width: 100%;
-	height: calc(50% - 300px);
-	
-	/* Pour placement du bouton paramètres */
-	display: flex;
-	flex-direction: row;
-	justify-content: end;
-}
-.panel-we {
-	height: 600px;
-	width: calc(50% - 400px);
+body {
+	margin: 0;
+	overflow: hidden;
 }
 
 /** Fenêtre de jeu (conteneur) */
 .game-window {
-	width: 800px;
-	height: 600px;
+	width: 100vw;
+	height: 100vh;
 	border-radius: 3px;
 	background-color: black;
-	z-index: -1;
+	overflow: hidden;
 }
 
 /** Ecran de pause */
-div#pause-div {
+div#pause-div {  /* disparaît dans la prochaine mise à jour */
 	background: radial-gradient(ellipse at center, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.1) 100%);
 	position: absolute;
 	left: 0;
 	top: 0;
-	height: 100vh;
-	width: 100vw;
+	height: 100%;
+	width: 100%;
 	z-index: 1;
 
     display: flex;
@@ -70,11 +44,11 @@ div#pause-div > span {
  *                              Magasin                              *
  *********************************************************************/
 .owned-money {
-	padding: 10px;
-	margin: 5px;
-	width: calc(100% - 30px);
+	padding: 1.3vh;
+	margin: 0.5vh;
+	width: calc(100% - 3.6vh);
 	font-family: monospace;
-    font-size: 14pt;
+  font-size: 2.6vh;
 	background: radial-gradient(#ff7c27, #ffb225);
 	box-shadow: 2px 2px 3px rgb(0 0 0 / 70%);
 	border-radius: 3px;
@@ -92,17 +66,17 @@ div#pause-div > span {
  * Article du magasin
  */
 .shop-item {
-	margin: 5px;
-	padding: 5px;
-	width: calc(50% - 20px);
+	margin: 0.5vh;
+	padding: 1vh;
+	width: calc(50% - 3vh);
 	background: linear-gradient(to bottom, #728eab, #ccd9ed);
 	border-radius: 3px;
 	box-shadow: 2px 2px 3px rgb(0 0 0 / 70%);
 	text-shadow: 0px 0px 10px white;
 	cursor: pointer;
 	user-select: none;
+	height: 15vh;
 
-	height: 110px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -113,24 +87,24 @@ div#pause-div > span {
 	transform: translate(1px, 1px);
 }
 .shop-item-name {
-	font-size: 14pt;
+	font-size: 2.6vh;
 	font-family: impact;
 }
 .shop-item-desc {
 	font-family: cursive;
-	font-size: 8pt;
+	font-size: 1.5vh;
 	text-align: justify;
 	text-indent: 2em;
-	margin-bottom: 10px;
+	margin-bottom: 1vh;
 }
 .shop-item-price {
 	font-family: monospace;
-	font-size: 11pt;
+	font-size: 1.9vh;
 }
 .shop-item-price.too-expensive { color: #c90000; }
 .shop-item-effect {
-	margin-bottom: 5px;
-	font-size: 8pt;
+	margin-bottom: 0.5vh;
+	font-size: 1.3vh;
 	font-family: sans-serif;
 }
 .shop-item-effect .green { color: #006000; }
@@ -139,15 +113,15 @@ div#pause-div > span {
 /** Plus utile */
 .shop-blabla {
 	font-family: cursive;
-	font-size: 10pt;
+	font-size: 1.7vh;
 	text-align: justify;
-	margin: 10px;
-	width: calc(100% - 20px);
+	margin: 1vh;
+	width: calc(100% - 2vh);
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
-.shop-blabla.welcome-text { font-size: 11pt; }
-img.in-text { width: 30px; }
+.shop-blabla.welcome-text { font-size: 1.9vh; }
+img.in-text { width: 3vh; }
 
 /**
  * Bouton lançant la vague suivante et fermant le magasin
@@ -155,11 +129,11 @@ img.in-text { width: 30px; }
 input.start-wave-button {
 	font-family: Monospace;
 	font-weight: bolder;
-	font-size: 20pt;
+	font-size: 3.4vh;
 	color: white;
 	text-shadow: 1px 1px black;
 	width: 40%;
-	height: 65px;
+	height: 8vh;
 	background: linear-gradient(to bottom, #864c01, #d58b00);
 	border-radius: 10px;
 	border: none;
@@ -177,16 +151,18 @@ input.start-wave-button:active {
  */
 .button, .rs-btn-action.main-form {
 	border-radius: 5px;
-	height: 50px;
-	width: 250px;
+	height: 6vh;
+	width: 30vh;
 	color: white;
 	border: none;
-	font-size: 12pt;
+	margin-top: 2vh;
+	cursor: pointer;
+
+	font-size: 2vh;
 	font-family: Monospace;
 	font-weight: bolder;
 	text-shadow: 1px 1px 1px black;
 	box-shadow: 2px 2px 3px rgb(0 0 0 / 70%);
-	cursor: pointer;
 }
 .button:hover, .rs-btn-action.main-form:hover { opacity: 0.8; }
 .button:active, .rs-btn-action.main-form:active {
@@ -196,10 +172,10 @@ input.start-wave-button:active {
 .save, .rs-btn-suppr { background: linear-gradient(to bottom, red, #ff5400); }
 .load, .rs-btn-create { background: linear-gradient(to bottom, #1a4800, #399d00); }
 .paramters {
-	height: 60px;
-	width: 60px;
-	margin-right: 10px;
-	margin-top: 10px;
+	height: 7vh;
+	width: 7vh;
+	margin-right: 1vh;
+	margin-top: 1vh;
 	background: linear-gradient(to bottom, #5e84bf, #78a0b9);
 	border: none;
 	border-radius: 10px;
@@ -213,14 +189,14 @@ input.start-wave-button:active {
  * Rapport de fin de vague
  */
 .dialog-body {
-  height: calc(100% - 75px);
+  height: calc(100% - 10vh);
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
 }
 
 .dialog-footer {
-  height: 60px;
+  height: 10vh;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -230,16 +206,17 @@ input.start-wave-button:active {
 .img-report {
 	background: url('gold_bag.png');
 	background-size: 100% 100%;
-	height: 100px;
-	width: 100px;
-	margin-bottom: 20px;
+	height: 15vh;
+	width: 15vh;
+	margin: 2vh;
 }
 
 .report-title {
 	font-family: impact;
-	font-size: 18pt;
+	font-size: 3.2vh;
 	font-style: italic;
-	padding-top: 15px;
+	padding-top: 1.5vh;
+	margin-bottom: 1.5vh;
 	box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -254,29 +231,29 @@ input.start-wave-button:active {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-bottom: 30px;
-    font-size: 14pt;
+    margin-bottom: 3vh;
+    font-size: 2.5vh;
 }
 
 .report-total {
-	font-size: 20pt;
-	margin-bottom: 30px;
+	font-size: 3.7vh;
+	margin-bottom: 3vh;
 	font-weight: bold;
-	padding-top: 20px;
-	padding-bottom: 20px;
+	padding-top: 2vh;
+	padding-bottom: 2vh;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 }
 
 .rs-modal-content p {
-	margin-left: 25px;
-	margin-right: 25px;
-	width: calc(100% - 50px);
+	margin-left: 2.5vh;
+	margin-right: 2.5vh;
+	width: calc(100% - 5vh);
 	font-family: cursive;
-	font-size: 24pt;
+	font-size: 3.5vh;
 	font-weight: bold;
 	text-align: justify;
-	text-indent: 60px;
-	margin-block-start: 0;
+	text-indent: 6vh;
+	margin-block-start: 0.5em;
 	margin-block-end: 0;
 }
 
