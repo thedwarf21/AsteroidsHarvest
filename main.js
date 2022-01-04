@@ -47,7 +47,15 @@
 //  		Niveau final avec un boss de fin, à un "jour du jeu" donné (ce pourrait être 10, par exemple)
 //  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
 //  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
-// 
+//
+//------------------------------- Optimisation(s) possible(s) ----------------------------------
+//	* Accesseurs pour les éléments du jeu dans AH_MainController :
+//		Certaines de ces fonctions sont appelées périodiquement (toutes les 50ms)
+//			-> les remplacer par des proprtiétés du scope pour rendre l'accès moins coûteux en temps processeur
+//			-> alimenter/mettre à jour ces propriétés au fil de l'eau
+//				=> + au niveau du code des composants, permettra de définir une nuance entre "sortie de l'interface" et 
+//					"ignoré par les tests de collision", sans toucher aux classes css
+//				=> économisera 3 parcours de DOM / 50ms --> gain de performances
 
 /**
  * Modifications apportées dans le dernier patch:
