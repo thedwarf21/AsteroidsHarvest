@@ -59,7 +59,7 @@
  *  		-> coordonnées CSS en pourcentage
  *      * Ajout de la classe RS_ViewPortCompatibility au game engine pour gérer la problématique de positionnement réel
  *        en fonction des coordonnées virtuelles et des dimensions de l'écran virtuel. 
- *  	* Forcer le mode "landscape", sur appareils mobiles (non testé, donc pas sûr que cela fonctionne)
+ *  	* Forcer le mode "landscape", sur appareils mobiles (ne fonctionne que sous Firefox, à l'heure actuelle)
  *  	* Passage en FULL responsive et fullscreen (le jeu utilise désormais tout l'espace disponible et adapte ses proportions)
  *  		-> dimensions des composants en vh (pourcentage de la hauteur de l'écran)
  *  		-> positionnement via RS_ViewPortCompatibility
