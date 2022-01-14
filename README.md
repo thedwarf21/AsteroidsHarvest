@@ -26,7 +26,7 @@ Le vaisseau se dirige à l'aide des touches fléchées du clavier:
 
 La barre espace permet de tirer.
 
-La touche 'P' permet de mettre le jeu en pause (ou de le relancer quand il est en pause)
+La touche 'P' permet de mettre le jeu en pause et d'ouvrir la fenêtre de paramètres.
 
 Vos tirs, lorsqu'ils ne détruisent pas l'astéroïde touché, modifient sa tajectoire. Maîtriser cet aspect du jeu vous sera d'un grand secours.
 
