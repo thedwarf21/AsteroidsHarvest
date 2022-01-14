@@ -37,23 +37,48 @@ De nombreuses (et indispensables) améliorations vous attendent ici alors ne vou
 
 La sauvegarde de la partie s'effectue sous la forme d'un cookie (valide 400 jours, pour info alors pas de panique), ce qui implique notamment, que votre sauvegarde n'est valable que pour le navigateur web et l'appareil utilisés. Par exemple, si vous faites une sauvegarde en jouant sur votre PC avec le navigateur Edge, votre sauvegarde ne sera pas accessible, si vous jouez sur le même PC mais avec un navigateur web différent, ou si vous jouez sur un autre PC, quel que soit le navigateur utilisé.
 
+## Compatibilité smartphone
+Depuis son écriture initiale, le jeu a subi une mise à jour afin d'être jouable sur appareils mobiles (smartphones / tablettes). Des boutons de contrôle apparaîssent à l'écran et la gestion du positionnement des éléments a été modifiée afin de s'adapter au ratio de la fenêtre du navigateur, notamment pour détecter les sorties d'écran.
+
+Il faudra cependant patienter avant de voir l'app se comporter comme une app classique (affichage plein écran sans l'UI du navigateur et vérouillage du mode paysage). En effet, le format *manifest.json* permettant ce genre de choses, en est au stade expérimental et n'est donc encore pas entré dans les standards.
+
+Le moment venu, une nouvelle mise à jour incluant le fichier *manifest.json" sera livrée ;) je prévois d'y inclure un tuto expliquant comment mettre le jeu en raccourci sur vos appareils mobiles, afin que vous puissiez l'utiliser aussi facilement qu'une app téléchargée depuis le Google Play Store.
+
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
 
 Son code source est 100% web: il ne s'agit que de *HTML* (structure des interfaces), de *CSS* (mise en page) et de *javascript* (moteur du jeu).
 
+### Structuration et architecture du code
 Un certain nombre de comportements du jeu, sont paramétrables via des constantes déclarées au début du fichier _main.js_.
 
 Les éléments du magasin sont déclarés et paramétrés via un objet _scope_, rattaché au controller pricipal et initialisé dans le fichier _main.js_.
 
-Le vaisseau, les astéroides ainsi que les bonus sont des composants web à part entière, héritant de _HTMLDivElement_
+Le vaisseau, les astéroides ainsi que les bonus sont des composants web à part entière, héritant de _HTMLDivElement_. Pour être plus précis, ils héritent de _MobileGameElement_, une classe créée par mes soins, fédérant les attributs et comportements communs à tous les éléments mobiles du jeu, et héritant elle-même de _HTMLDivElement_.
 
-Le composant *RS_Dialog* de la RS WCL (publiée sur ce même compte GitHub) a été intégré pour les popups (magasin, demande de confirmation de sauvegarde et rapport de fin de vague)
+Le composant *RS_Dialog* de la RS WCL (publiée sur ce même compte GitHub) a été intégré pour les popups (magasin, demande de confirmation de sauvegarde et rapport de fin de vague) et a subi une évolution permettant de générer une popup à partir d'un template HTML, afin de mieux compartimenter les couches MVC.
 
-La classe AH_Shop sert à lire, présenter et modifier les informations relatives au magasin et aux améliorations.
+La classe *AH_Shop* sert à lire, présenter et modifier les informations relatives au magasin et aux améliorations.
 
-La classe AH_Timer, quant à elle, gère tout ce qui est lié au temps qui passe: c'est elle qui invoque les fonction de déplacement, contrôle les collisions, etc...
+La classe *AH_Timer*, quant à elle, gère tout ce qui est lié au temps qui passe: c'est elle qui invoque les fonction de déplacement, contrôle les collisions, etc...
 
-Parmi les trucs à revoir: au début, j'ai voulu utiliser la classe RS_WCL pour me simplifier la vie sur la création des composants du jeu (voir classe *AH_Spaceship* dans _AH_Components.js_), mais au final, je me suis rapidement rendu compte qu'il s'aggissait d'une erreur, dans ce contexte d'utilisation. En effet, la RS WCL est orientée templates HTML, or tous les éléments sont créés et gérés par le programme javascript. En revanche, il pourrait être opportun de gérer les templates dans *RS_Dialog* (permettre d'utiliser l'url d'un template HTML comme contenu d'une popup), pour se libérer du code de génération des popup (un peu indigeste, il faut bien le reconnaître).
+### Le moteur de jeu générique
+Vous trouverez, dans le fichier *rs_game_engine.js*, les classes constituant les prémicies d'un moteur de jeu générique, développé pour l'occasion (autant écrire directement du code "factorisable" lorsque cela s'avère possible).
 
-En situation de développement, (pour régler les coefs de calcul de taille des hitbox, par exemple) il est possible d'afficher les hitbox du vaisseau et des astéroïdes en modifiant la valeur d'initialisation de la propriété _AH_MainController.scope.game.showHitboxes_ à _true_.
+#### La classe RS_Hitbox
+Cette classe porte comme attribut les informations nécessaires aux tests de collision.
+
+Les instances de cette classe embarquent également une méthode attendant un autre objet *RS_Hitbox* en paramètre, et effectuant le test de collision. Cette dernière est une méthode "d'aiguillage" appelant la méthode spécifique correspondant à la forme de chacune des hitbox.
+
+Pour le moment, seules les hitbox circulaires sont gérées. L'implémentation des méthodes de test de collision permettant de gérer des hitbox rectangulaires viendra plus tard.
+
+#### La classe RS_ViewPortCompatibility
+Cette classe est chargée de la prise en charge du ratio de la fenêtre affichant le jeu. Elle doit simplement être instanciée lors de l'ouverture de la page. Le constructeur met en place un listener permettant de maintenir la compatibilité, suite à un redimensionnement de ladite fenêtre.
+
+Elle convertit les coordonnées virtuelles exprimées en pixels, en coordonnées réelles exprimées en pourcentage de la taille de la fenêtre sur l'axe principal.
+
+Pour ce faire, elle attend en paramètre du constructeur, l'axe principal et la taille virtuelle en pixels correspondant à l'axe en question. Le ratio de la fenêtre permet ensuite d'extrapoler la taille virtuelle de l'autre axe.
+
+Par exemple, dans Asteroids Harvest, l'axe principal est l'axe Y et la hauteur virtuelle est de 600 pixels. Ce qui implique que:
+* Les coordonnées sont exprimées en vh (pourcentage de la hauteur de la fenêtre)
+* La largeur virtuelle est de 800 pixels en 4:3, ~1067 pixels en 16:9, etc... (tous ratios supportés, même non standards)
