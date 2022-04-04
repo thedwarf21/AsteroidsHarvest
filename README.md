@@ -1,6 +1,12 @@
 # AsteroidsHarvest
 Jeu "home made" de destruction d'astéroïdes
 
+Sur appareils mobiles, grâce à l'utilisation du fichier **manifest.json**, il est possible d'utiliser le jeu de la même manière qu'une application autonome (non garanti avec d'autres navigateurs web que Chrome mobile, pour le moment, mais cela devrait entrer prochainement dans les standards).
+
+Pour ce faire, il vous suffit d'ouvrir [le jeu](https://thedwarf21.github.io/AsteroidsHarvest) dans un navigateur web, depuis votre appareil mobile. Ouvrez ensuite les options de la page (bouton affichant 3 points à la verticale, dans la barre d'outils) et choisissez l'option "Ajouter à l'écran d'accueil". Vous pourrez renommer le lien à votre convenance. Après validation, l'icône du jeu apparaît sur l'écran d'accueil de votre appareil avec le titre de votre choix, comme s'il s'agissait d'une application installée sur votre appareil. Lorsque vous l'ouvrez, la page s'affiche en plein écran, sans la barre d'outils et force l'orientation en paysage.
+
+Comme dirait l'autre dans la série Futurama (Matt Groening) : "Bienvenue dans le monde de demain !!"
+
 ## Pitch
 En l'année 2074, la race humaine doit fuir la Terre, devenue invivable suite à une catastrophe écologique. L'ayant vu arriver, l'humanité est tout de même parvenue à développer des technologies rendant possible les vols spaciaux habités de longue durée.
 
