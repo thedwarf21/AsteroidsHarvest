@@ -248,7 +248,7 @@ class AH_MainController {
 		});
 
 		// On inhibe le scroll (qui apparaît toujours sur mobile, en dépit du CSS, alors autant l'inhiber)
-		window.addEventListener('scroll', function(e) { e.preventDefault(); })
+		window.addEventListener('scroll', function(e) { window.scrollTo({ top: 0, left: 0 });
 
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
