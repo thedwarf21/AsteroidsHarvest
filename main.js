@@ -247,6 +247,9 @@ class AH_MainController {
 				controls.spacePressed = false;
 		});
 
+		// On inhibe le scroll (qui apparaît toujours sur mobile, en dépit du CSS, alors autant l'inhiber)
+		window.addEventListener('scroll', function(e) { e.preventDefault(); })
+
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
 	}
