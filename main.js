@@ -247,6 +247,9 @@ class AH_MainController {
 				controls.spacePressed = false;
 		});
 
+		// On inhibe le drag and drop de l'objet window pour désactiver le swipe des écrans tactiles (décale l'IHM, durant le jeu)
+		window.addEventListener('dragstart', function(e) { e.preventDefault(); console.log("test"); })
+
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
 	}
