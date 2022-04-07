@@ -10,7 +10,7 @@ body {
 	border-radius: 3px;
 	background-color: black;
 	overflow: hidden;
-	position: relative;
+	position: fixed;
 }
 
 /** Ecran de pause */
