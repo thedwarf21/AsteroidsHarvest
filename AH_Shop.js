@@ -31,6 +31,9 @@ class AH_Shop {
 	static show() {
 		let scope = AH_MainController.scope;
 		scope.controls.paused = true;
+		
+		// Pour les smartphones, on recale les boutons
+		window.scrollTo({ top: 0, left: 0, });
 
 		// Construction de la popup
 		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false, "tpl_shop.html", function() {
