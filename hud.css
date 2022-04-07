@@ -8,42 +8,42 @@
 	position: absolute;
 	border-radius: 50%;
 	background: radial-gradient(circle at center, white 10%, transparent);
-	width: 10vh;
-	height: 10vh;
+	width: 15vh;
+	height: 15vh;
 }
 
 .hud .button.left {
-	bottom: 17.5vh;
-	left: 5vh;
+	bottom: 25vh;
+	left: 10vh;
 }
 
 .hud .button.right {
-	bottom: 17.5vh;
-	left: 30vh;
+	bottom: 25vh;
+	left: 40vh;
 }
 
 .hud .button.forward {
-	bottom: 30vh;
-	left: 17.5vh;
+	bottom: 40vh;
+	left: 25vh;
 }
 
 .hud .button.backward {
-	bottom: 5vh;
-	left: 17.5vh;
+	bottom: 10vh;
+	left: 25vh;
 }
 
 .hud .button.fire {
-	height: 17.5vh;
-	width: 17.5vh;
+	height: 35vh;
+	width: 35vh;
 	bottom: 5vh;
 	right: 5vh;
 }
 
 .hud .pause {
-	height: 17.5vh;
-	width: 17.5vh;
-	top: 5vh;
-	right: 5vh;
+	height: 20vh;
+	width: 20vh;
+	top: 10vh;
+	right: 10vh;
 
 	display: flex;
 	flex-direction: row;
