@@ -9,7 +9,11 @@ body {
 	height: 100vh;
 	border-radius: 3px;
 	background-color: black;
+	
 	overflow: hidden;
+	position: fixed;
+	top: 0;
+	left: 0;
 }
 
 /** Ecran de pause */
