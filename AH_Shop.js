@@ -31,13 +31,10 @@ class AH_Shop {
 	static show() {
 		let scope = AH_MainController.scope;
 		scope.controls.paused = true;
-		
-		// Pour les smartphones, on recale les boutons
-		window.scrollTo({ top: 0, left: 0 });
 
 		// Construction de la popup
 		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false, "tpl_shop.html", function() {
-			popup.querySelector("#player_money").innerHTML = AH_MainController.intToHumanReadableString(scope.game.money);
+			popup.querySelector("#player_money").innerHTML = AH_MainController.intToHumanReadableString(scope.game.money) + " Brouzoufs";
 
 			// Parcours des la liste "shop" pour afficher le magasin
 			let itemsContainer = popup.querySelector("#items-container");
@@ -108,7 +105,7 @@ class AH_Shop {
 				this.ah_price = AH_Shop.__getPrice(this.ah_shopElem);
 
 				// Mise à jour de l'interface
-				document.getElementById("player_money").innerHTML = AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money);
+				document.getElementById("player_money").innerHTML = AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money) + " Brouzoufs";
 				AH_Shop.refreshAllShopItems();
 			}
 		});
@@ -131,7 +128,7 @@ class AH_Shop {
 		// Prix
 		let price = AH_Shop.__getPrice(shopElem);
 		let isMaxed = (shopElem.max_level && shopElem.level == shopElem.max_level)
-		if (price > AH_MainController.scope.game.money)
+		if (price > AH_MainController.scope.game.money || isMaxed)
 			divPrice.classList.add("too-expensive");
 		divPrice.innerHTML  = isMaxed
 							? "Niveau max. atteint"

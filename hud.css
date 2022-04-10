@@ -13,23 +13,39 @@
 }
 
 .hud .button.left {
-	bottom: 25vh;
-	left: 10vh;
+    bottom: 25vh;
+    left: 12vh;
+
+    width: 18vh;
+    border-radius: 0;
+    clip-path: polygon(100% 50%, 67% 100%, 0% 100%, 0% 0%, 67% 0%);
 }
 
 .hud .button.right {
-	bottom: 25vh;
-	left: 40vh;
+    bottom: 25vh;
+    left: 35vh;
+    
+    width: 18vh;
+    border-radius: 0;
+    clip-path: polygon(0% 50%, 33% 0%, 100% 0%, 100% 100%, 33% 100%);
 }
 
 .hud .button.forward {
-	bottom: 40vh;
-	left: 25vh;
+    bottom: 35vh;
+    left: 25vh;
+    
+    height: 18vh;
+    border-radius: 0;
+    clip-path: polygon(50% 100%, 0% 67%, 0% 0%, 100% 0%, 100% 67%);
 }
 
 .hud .button.backward {
-	bottom: 10vh;
-	left: 25vh;
+    bottom: 12vh;
+    left: 25vh;
+    
+    height: 18vh;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 100% 33%, 100% 100%, 0% 100%, 0% 33%);
 }
 
 .hud .button.fire {
