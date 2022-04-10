@@ -507,8 +507,10 @@ class AH_Bonus extends MobileGameElement {
     this.timeRemaining--;
     if (this.timeRemaining == BONUS_BLINK_START_AT)
       this.classList.add("blink");
-    if (this.timeRemaining == 0) 
+    if (this.timeRemaining == 0) {
       this.remove();
+      AH_MainController.playAudio("fail.mp3");
+    }
   }
 }
 customElements.define('ah-js-bonus', AH_Bonus, { extends: 'div' });

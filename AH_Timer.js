@@ -28,6 +28,7 @@ class AH_Timer {
 		else if (scope.controls.spacePressed) {
 			spaceship.shoot();
 			scope.game.beforeNextShot = AH_Shop.getShopAttributeValue("ASP");
+			AH_MainController.playAudio("shoot.mp3");
 		}
 
 		// Gestion du contrôle de la rotation du vaisseau
@@ -76,12 +77,15 @@ class AH_Timer {
 				if (shot.hitbox.checkCollide(asteroid.hitbox)) {
 					asteroid.impact(shot.angle_rad, shot.power);
 					shot.explode();
+					AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
 				}
 			}
 
 			// Contrôle de collision avec le vaisseau
-			if (spaceship.hitbox.checkCollide(asteroid.hitbox))
+			if (spaceship.hitbox.checkCollide(asteroid.hitbox)) {
 				spaceship.explode();
+				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
+			}
 		}
 
 		// Collecte des bonus
@@ -89,6 +93,7 @@ class AH_Timer {
 			if (spaceship.hitbox.checkCollide(bonus.hitbox)) {
       			AH_MainController.scope.game.bonusCollected++;
 				bonus.remove();
+				AH_MainController.playAudio("coin.mp3");
 			}
 		}
 	}

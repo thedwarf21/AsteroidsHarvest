@@ -56,6 +56,7 @@
 //				=> + au niveau du code des composants, permettra de définir une nuance entre "sortie de l'interface" et 
 //					"ignoré par les tests de collision", sans toucher aux classes css
 //				=> économisera 3 parcours de DOM / 50ms --> gain de performances
+// 
 
 /**
  * Modifications apportées dans le dernier patch:
@@ -67,7 +68,7 @@
  *  		-> coordonnées CSS en pourcentage
  *      * Ajout de la classe RS_ViewPortCompatibility au game engine pour gérer la problématique de positionnement réel
  *        en fonction des coordonnées virtuelles et des dimensions de l'écran virtuel. 
- *  	* Forcer le mode "landscape", sur appareils mobiles (ne fonctionne que sous Firefox, à l'heure actuelle)
+ *  	* Forcer le mode "landscape", sur appareils mobiles (non testé, donc pas sûr que cela fonctionne)
  *  	* Passage en FULL responsive et fullscreen (le jeu utilise désormais tout l'espace disponible et adapte ses proportions)
  *  		-> dimensions des composants en vh (pourcentage de la hauteur de l'écran)
  *  		-> positionnement via RS_ViewPortCompatibility
@@ -97,6 +98,9 @@ const SPACESHIP_SIZE = 50;
 const SHOT_BASE_SIZE = 5;
 const BASE_AST_SIZE = 15;
 const BONUS_SIZE = 25;
+
+const DEFAULT_AUDIO_LASTING_TIME = 1000;
+const EXPLOSION_AUDIO_TIME = 5000;
 
 // La hitbox est un disque: les valeurs de ces constantes sont à adapter en fonction des image utilisés
 // Le disque a pour rayon la largeur de l'élément HTML (qui est carré)
@@ -252,6 +256,24 @@ class AH_MainController {
 
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
+	}
+
+	/**
+	 * Fonction lançant un son dans une balise audio créée à la volée
+	 *
+	 * @param      {string}  filename      Nom du fichier audio
+	 * @param      {number}  lasting_time  Durée de vie de la balise audio (en fonction du son envoyé)
+	 */
+	static playAudio(filename, lasting_time) {
+		let audio_player = document.createElement("AUDIO");
+		audio_player.src = filename;
+		document.body.appendChild(audio_player);
+		audio_player.play().catch((error)=> { console.error(error); });
+
+		// On retire la balise audio du DOM, dès lors qu'elle n'est plus utile
+		if (!lasting_time)
+			lasting_time = DEFAULT_AUDIO_LASTING_TIME;
+		setTimeout(()=> audio_player.remove(), lasting_time);	
 	}
 
 	/**
