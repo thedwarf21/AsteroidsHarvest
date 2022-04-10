@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="pragma" content="no-cache" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="spaceship.png" />
     <title>Asteroids Harvest</title>
 
@@ -33,6 +33,14 @@
 
   <!-- Corps de la page -->
   <body onload="AH_MainController.onLoad()">
+
+    <!-- Force un premier chargement (et donc, une mise en cache) des fichiers audio (pour éviter la latence, lors de la première utilisation du fichier) -->
+    <audio src="coin.mp3"></audio>
+    <audio src="shoot.mp3"></audio>
+    <audio src="explosion.mp3"></audio>
+    <audio src="fail.mp3"></audio>
+
+    <!-- L'interface du jeu (en tous cas, le contenant et le HUD pour appareils tactiles) -->
     <div class="game-window" id="game-window"></div>
     <div class="hud">
       <div class="button left" ></div>
