@@ -1,6 +1,8 @@
 body {
 	margin: 0;
 	overflow: hidden;
+        max-height: 100vh;
+        max-width: 100vw;
 }
 
 /** Fenêtre de jeu (conteneur) */
