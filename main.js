@@ -99,6 +99,7 @@ const SHOT_BASE_SIZE = 5;
 const BASE_AST_SIZE = 15;
 const BONUS_SIZE = 25;
 
+const AUDIO_PATH = "sounds/";
 const DEFAULT_AUDIO_LASTING_TIME = 1000;
 const EXPLOSION_AUDIO_TIME = 5000;
 
@@ -251,8 +252,8 @@ class AH_MainController {
 				controls.spacePressed = false;
 		});
 
-		// On inhibe le touchmove
-		window.addEventListener('touchmove', function(e) { e.preventDefault(); });
+		// On inhibe le scroll (qui apparaît toujours sur mobile, en dépit du CSS, alors autant l'inhiber)
+		window.addEventListener('scroll', function(e) { window.scrollTo(0, 0); });
 
 		// Lancement du gestionnaire de Timer
 		AH_Timer.letsPlay();
@@ -266,7 +267,7 @@ class AH_MainController {
 	 */
 	static playAudio(filename, lasting_time) {
 		let audio_player = document.createElement("AUDIO");
-		audio_player.src = filename;
+		audio_player.src = AUDIO_PATH + filename;
 		document.body.appendChild(audio_player);
 		audio_player.play().catch((error)=> { console.error(error); });
 
@@ -274,6 +275,30 @@ class AH_MainController {
 		if (!lasting_time)
 			lasting_time = DEFAULT_AUDIO_LASTING_TIME;
 		setTimeout(()=> audio_player.remove(), lasting_time);	
+	}
+
+	/**
+	 * Lance une musique d'ambiance, en boucle
+	 *
+	 * @param      {string}  filename  Le nom du fichier
+	 */
+	static startMusicLoop(filename) {
+		let audio_player = document.createElement("AUDIO");
+		audio_player.src = AUDIO_PATH + filename;
+		audio_player.loop = true;
+		document.body.appendChild(audio_player);
+		audio_player.play().catch((error)=> { console.error(error); });
+		AH_MainController.scope.music_player = audio_player;
+	}
+
+	/**
+	 * Arrête la musique et supprime le lecteur du DOM
+	 */
+	static stopMusicLoop() {
+		if (AH_MainController.scope.music_player) {
+			AH_MainController.scope.music_player.pause();
+			AH_MainController.scope.music_player.remove();
+		}
 	}
 
 	/**
@@ -368,6 +393,8 @@ class AH_MainController {
 	 * Fonction démarrant la vague suivante
 	 */
 	static startWave() {
+		AH_MainController.stopMusicLoop();
+		AH_MainController.startMusicLoop("audiohub_impulsive.mp3");
 		AH_MainController.__clearGameWindow();
 
 		// Créer les astéroïdes correspondant au niveau (Lvl)

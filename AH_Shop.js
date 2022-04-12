@@ -31,6 +31,7 @@ class AH_Shop {
 	static show() {
 		let scope = AH_MainController.scope;
 		scope.controls.paused = true;
+		AH_MainController.startMusicLoop("audiohub_don-t-stop-rockin.mp3");
 
 		// Construction de la popup
 		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false, "tpl_shop.html", function() {
