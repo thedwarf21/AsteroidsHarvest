@@ -445,6 +445,7 @@ class AH_MainController {
 		if (AH_MainController.asteroids.length == 0) {
 			AH_MainController.scope.game.level++;
 			AH_MainController.showWaveIncomesReport();
+			AH_MainController.playAudio("victory.mp3", EXPLOSION_AUDIO_TIME);
 		}
 	}
 

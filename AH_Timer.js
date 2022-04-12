@@ -85,6 +85,7 @@ class AH_Timer {
 			if (spaceship.hitbox.checkCollide(asteroid.hitbox)) {
 				spaceship.explode();
 				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
+				setTimeout(()=> { AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME); }, EXPLOSION_AUDIO_TIME);
 			}
 		}
 
