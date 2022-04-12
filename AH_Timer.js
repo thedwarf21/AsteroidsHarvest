@@ -84,6 +84,7 @@ class AH_Timer {
 			// Contrôle de collision avec le vaisseau
 			if (spaceship.hitbox.checkCollide(asteroid.hitbox)) {
 				spaceship.explode();
+				AH_MainController.stopMusicLoop();
 				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
 			}
 		}
