@@ -283,6 +283,7 @@ class AH_MainController {
 	 * @param      {string}  filename  Le nom du fichier
 	 */
 	static startMusicLoop(filename) {
+		AH_MainController.stopMusicLoop();
 		let audio_player = document.createElement("AUDIO");
 		audio_player.src = AUDIO_PATH + filename;
 		audio_player.loop = true;
