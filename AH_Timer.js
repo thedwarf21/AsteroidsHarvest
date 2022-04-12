@@ -86,7 +86,7 @@ class AH_Timer {
 				spaceship.explode();
 				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
 				AH_MainController.stopMusicLoop();
-				setTimeout(()=> { AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME); }, EXPLOSION_AUDIO_TIME);
+				AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME);
 			}
 		}
 
