@@ -54,14 +54,16 @@ Il est possible depuis cette fenêtre, d'afficher/masquer les hitbox et de régl
 ## Compatibilité smartphone
 Depuis son écriture initiale, le jeu a subi une mise à jour afin d'être jouable sur appareils mobiles (smartphones / tablettes). Des boutons de contrôle apparaîssent à l'écran et la gestion du positionnement des éléments a été modifiée afin de s'adapter au ratio de la fenêtre du navigateur, notamment pour détecter les sorties d'écran.
 
-Il faudra cependant patienter avant de voir l'app se comporter comme une app classique (affichage plein écran sans l'UI du navigateur et vérouillage du mode paysage). En effet, le format *manifest.json* permettant ce genre de choses, en est au stade expérimental et n'est donc encore pas entré dans les standards.
+Le projet est à présent utilisable sur smartphone comme une application autonome. Pour ce faire, il suffit de suivre les étapes suivantes :
+* Ouvrez les jeu https://thedwarf21.gitub.io/AsteroidsHarvest sur votre appareil mobile
+* Dans les options de la fenêtre, sélectionnez "Ajouter à l'écran d'accueil"
 
-Le moment venu, une nouvelle mise à jour incluant le fichier *manifest.json" sera livrée ;) je prévois d'y inclure un tuto expliquant comment mettre le jeu en raccourci sur vos appareils mobiles, afin que vous puissiez l'utiliser aussi facilement qu'une app téléchargée depuis le Google Play Store.
+L'icône du jeu apparaît alors sur votre appareil. Lorsque vous ouvrez la page du jeu via cette icône, celle-ci se comporte comme une application autonome (affichage forcé en mode paysage).
 
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
 
-Son code source est 100% web: il ne s'agit que de *HTML* (structure des interfaces), de *CSS* (mise en page) et de *javascript* (moteur du jeu).
+Son code source est 100% web: il ne s'agit que de *HTML* (structure des interfaces), de *CSS* (mise en page et affichage) et de *javascript* (moteur du jeu).
 
 ### Structuration et architecture du code
 Un certain nombre de comportements du jeu, sont paramétrables via des constantes déclarées au début du fichier _main.js_.
@@ -77,14 +79,14 @@ La classe *AH_Shop* sert à lire, présenter et modifier les informations relati
 La classe *AH_Timer*, quant à elle, gère tout ce qui est lié au temps qui passe: c'est elle qui invoque les fonction de déplacement, contrôle les collisions, etc...
 
 ### Le moteur de jeu générique
-Vous trouverez, dans le fichier *rs_game_engine.js*, les classes constituant les prémicies d'un moteur de jeu générique, développé pour l'occasion (autant écrire directement du code "factorisable" lorsque cela s'avère possible).
+Vous trouverez, dans le fichier *rs_game_engine.js*, les classes constituant les prémicies d'un moteur de jeu générique, développé pour l'occasion (autant écrire directement du code "factorisable", lorsque cela s'avère possible).
 
 #### La classe RS_Hitbox
 Cette classe porte comme attribut les informations nécessaires aux tests de collision.
 
 Les instances de cette classe embarquent également une méthode attendant un autre objet *RS_Hitbox* en paramètre, et effectuant le test de collision. Cette dernière est une méthode "d'aiguillage" appelant la méthode spécifique correspondant à la forme de chacune des hitbox.
 
-Pour le moment, seules les hitbox circulaires sont gérées. L'implémentation des méthodes de test de collision permettant de gérer des hitbox rectangulaires viendra plus tard.
+Pour le moment, seules les hitbox circulaires sont gérées. L'implémentation des méthodes de test de collision permettant de gérer des hitbox rectangulaires viendra plus tard (quand j'en aurai besoin ;p).
 
 #### La classe RS_ViewPortCompatibility
 Cette classe est chargée de la prise en charge du ratio de la fenêtre affichant le jeu. Elle doit simplement être instanciée lors de l'ouverture de la page. Le constructeur met en place un listener permettant de maintenir la compatibilité, suite à un redimensionnement de ladite fenêtre.
