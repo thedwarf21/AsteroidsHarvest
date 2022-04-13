@@ -55,7 +55,7 @@ class AH_HomeScreen {
 			let cookie = document.cookie;
 			let startIndex = cookie.indexOf(name) + name.length;
 			let endIndex = cookie.indexOf(";", startIndex);
-			if (startIndex != -1) {
+			if (startIndex - name.length != -1) {
 				let cookieContent = cookie.substring(startIndex, (endIndex == -1 ? undefined : endIndex));
 				let saved_game = JSON.parse(cookieContent);
 				AH_MainController.scope.game.money = saved_game.money;
