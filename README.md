@@ -55,10 +55,12 @@ Il est possible depuis cette fenêtre, d'afficher/masquer les hitbox et de régl
 Depuis son écriture initiale, le jeu a subi une mise à jour afin d'être jouable sur appareils mobiles (smartphones / tablettes). Des boutons de contrôle apparaîssent à l'écran et la gestion du positionnement des éléments a été modifiée afin de s'adapter au ratio de la fenêtre du navigateur, notamment pour détecter les sorties d'écran.
 
 Le projet est à présent utilisable sur smartphone comme une application autonome. Pour ce faire, il suffit de suivre les étapes suivantes :
-* Ouvrez les jeu https://thedwarf21.gitub.io/AsteroidsHarvest sur votre appareil mobile
+* Ouvrez le jeu https://thedwarf21.gitub.io/AsteroidsHarvest sur votre appareil mobile
 * Dans les options de la fenêtre, sélectionnez "Ajouter à l'écran d'accueil"
 
 L'icône du jeu apparaît alors sur votre appareil. Lorsque vous ouvrez la page du jeu via cette icône, celle-ci se comporte comme une application autonome (affichage forcé en mode paysage).
+
+Le forcing en mode paysage fonctionne bien avec Chrome Mobile, mais pas sur le navigateur par défaut de Samsung, d'après ce que j'ai pu constater. Je ne sais pas où en sont les autres navigateurs mobile, de ce côté là.
 
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
