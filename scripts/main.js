@@ -1,80 +1,3 @@
-//##################################
-//# Liste des idées d'amélioration #
-//##################################
-//------------------------------------------ Interface et fonctionnalités ------------------------------------------ 
-// 
-//  - Modifier les paramètres afin que le jeu soit plus dynamique, dès le départ
-//  
-//  - Mettre en place l'écran d'aide (bouton à gauche du bouton de début de vague, dans le magasin et en haut à gauche dans la bordure)
-//
-//	- Trouver un illustrateur pour:
-//  	* Mettre en place une introduction, présentant le pitch 
-//  		-> juste besoin de quelques visuels pour coder une une intro sympa
-//  		-> créer une classe javascript permettant de gérer et afficher génériquement les cinématiques, sur la base d'un fichier .json
-//  			=> le fichier JSON déclarera une liste d'objets contenant chacun les paramètres d'une séquence, sous la forme:
-//  					{
-//  						duration_ms: 15000,
-//  						remove_from_frame: ['intro_0_1', 'intro_0_2', 'intro_0_2'], /* images à supprimer en début de la séquence */
-//  						add_to_frame: [{											/* images à créer en début de séquence */
-//			  						id: 'intro_1_1',
-//  								url: 'intro_1_1.png',
-//  								top: 5vh,  					/* une image en haut à gauche */
-//  								left: 18vh,
-//  								width: 25vh,
-//  								ratio: 245/138 				/* dimensions réelles de l'image -> L/H */
-//  							}, {
-//			  						image_id: 'intro_1_2',
-//  								image_url: 'intro_1_2.png',
-//  								top: 59vh,					/* une image en bas à droite */
-//  								left: 120vh /* au minimum, viewWidth = 4/3 * viewHeight -> pour ne jamais sortir de l'écran, left + width < 133vh */
-//  								width: 10vh,
-//  								ratio: 52/187
-//  							}]
-//  					}
-//  			=> clic -> passer à la séquence suivante / fermer, si pas de séquence suivante
-//	    * Mettre en place un écran titre => "Paramètres" (sauvegarde, chargement, etc.) et "Jouer"
-//  	
-//  - Mettre en place un second mode de jeu "Arcade", le mode de jeu d'origine serait bâptisé "Mode Infini":
-//  	* Pitch (alternative du pitch d'origine):
-//  			Une armée d'aliens belliqueux prend en chasse le StarShip Hope. Malheureusement, les réserves de minerais 
-//  		sont insuffisantes pour quitter la zone.
-//  		
-//  			En désespoir de cause, le StarShip Hope s'enfonce dans une ceinture d'astéroïdes pour tenter de perdre 
-//  		l'assaillant tout en reconstituant son stock de minerais, afin de s'éloigner au plus vite de la menace.
-//  	* Ce qui change:
-//  		Les vagues deviennent des jours
-//  		Après un jour, on passe au jour suivant, même en cas de crash => toujours plus d'astéroïdes
-//  		Niveau final avec un boss de fin, à un "jour du jeu" donné (ce pourrait être 10, par exemple)
-//  		Pas de magasin dans ce mode là: votre vaisseau récupérateur est au même niveau d'améliorations qu'en Mode Infini
-//  			=> Faire en sorte que la difficulté s'adapte à l'équipement du joueur ;)
-//
-//------------------------------- Optimisation(s) possible(s) ----------------------------------
-//	* Accesseurs pour les éléments du jeu dans AH_MainController :
-//		Certaines de ces fonctions sont appelées périodiquement (toutes les 50ms)
-//			-> les remplacer par des proprtiétés du scope pour rendre l'accès moins coûteux en temps processeur
-//			-> alimenter/mettre à jour ces propriétés au fil de l'eau
-//				=> + au niveau du code des composants, permettra de définir une nuance entre "sortie de l'interface" et 
-//					"ignoré par les tests de collision", sans toucher aux classes css
-//				=> économisera 3 parcours de DOM / 50ms --> gain de performances
-// 
-
-/**
- * Modifications apportées dans le dernier patch:
- *  
- *  - Mettre sur pause ouvre les paramètres
- *  - Compatibilité smartphone:
- *  	* On conserve le système de coordonnées (indispensable, lorsqu'il est question de gérer des angles)
- *  		-> les coordonnées deviennent virtuelles
- *  		-> coordonnées CSS en pourcentage
- *      * Ajout de la classe RS_ViewPortCompatibility au game engine pour gérer la problématique de positionnement réel
- *        en fonction des coordonnées virtuelles et des dimensions de l'écran virtuel. 
- *  	* Forcer le mode "landscape", sur appareils mobiles (non testé, donc pas sûr que cela fonctionne)
- *  	* Passage en FULL responsive et fullscreen (le jeu utilise désormais tout l'espace disponible et adapte ses proportions)
- *  		-> dimensions des composants en vh (pourcentage de la hauteur de l'écran)
- *  		-> positionnement via RS_ViewPortCompatibility
- * 		* Ajout d'un HUD ne s'affichant que sur appareils mobiles (largeur de l'écran en lanscape < 1024px)
- */
-
 //------------- Constantes --------------
 // Contenus de boîtes de dialogue
 const QUESTION_COOKIES = `<p>Le jeu se sauvegarde sous forme de cookie.</p>
@@ -147,7 +70,7 @@ class AH_MainController {
 			asteroids: [],
 			bonusItems: [],
 			game: {
-				money: 100000,
+				money: 0,
 				level: 1,
 				save_slot: 1,
 				beforeNextShot: 0,
