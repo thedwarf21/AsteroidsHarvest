@@ -18,6 +18,16 @@ Le vaisseau doit changer de secteur de recherche prochainement: ce système plan
 
 ## Manuel de jeu
 
+### Visuels et bande son
+Tous les visuels ainsi que les fichiers sons utilisés (musique de fond, bruitages) sont des fichiers libres de droits.
+
+### Ecran d'accueil
+Vous avez la possibilité de jouer jusqu'à 3 parties, disposant chacune de son propre fichier de sauvegarde.
+
+La sauvegarde se fait automatiquement, au début et à la fin de chaque vague, de manière à ce que vous ne perdiez pas votre progression.
+
+Si vous choisissez "Nouvelle partie", vous ne pouvez pas choisir un emplacement de sauvegarde déjà utilisé, tandis que si vous choisissez "Continuer", vous ne pouvez pas choisir un emplacement vierge.
+
 ### Contrôles atypiques
 Nous sommes dans l'espace. Il n'y a donc aucun frottement. Un objet lancé ne ralentit pas de lui même. Une impulsion entraine donc une inertie sans fin, une dérive. Pour mettre fin à cette dérive, il vous faudra délivrer une impulsion équivalente dans le sens opposé.
 
@@ -25,10 +35,10 @@ Les premiers temps, il est fort probable que vous soyez déstabilisé: ne vous d
 
 ### Commandes du vaisseau récolteur
 Le vaisseau se dirige à l'aide des touches fléchées du clavier:
-  - la touche haut donne une impulsion dans le sens d'orientation du vaisseau
-  - la touche bas donne une impulsion dans le sens opposé à l'orientation du vaisseau
-  - la touche gauche fait pivoter le vaisseau vers la gauche
-  - la touche droite fait pivoter le vaisseau vers la droite
+* la touche haut donne une impulsion dans le sens d'orientation du vaisseau
+* la touche bas donne une impulsion dans le sens opposé à l'orientation du vaisseau
+* la touche gauche fait pivoter le vaisseau vers la gauche
+* la touche droite fait pivoter le vaisseau vers la droite
 
 La barre espace permet de tirer.
 
@@ -45,10 +55,6 @@ Un bouton (roue dentée) permet d'ouvrir la fanêtre de paramètres.
 
 ### Paramètres du jeu
 
-Depuis cette fenêtre vous pouvez sauvegarder la partie en cours ou charger la dernière sauvegarde. 
-
-La sauvegarde de la partie s'effectue sous la forme d'un cookie (valide 400 jours, pour info alors pas de panique), ce qui implique notamment, que votre sauvegarde n'est valable que pour le navigateur web et l'appareil utilisés. Par exemple, si vous faites une sauvegarde en jouant sur votre PC avec le navigateur Edge, votre sauvegarde ne sera pas accessible, si vous jouez sur le même PC mais avec un navigateur web différent, ou si vous jouez sur un autre appareil, quel que soit le navigateur utilisé.
-
 Il est possible depuis cette fenêtre, d'afficher/masquer les hitbox et de régler la sensibilité radiale (entre 112.5°/s et 337.5°/s : par défaut, 225°/s). 
 
 ## Compatibilité smartphone
@@ -60,7 +66,7 @@ Le projet est à présent utilisable sur smartphone comme une application autono
 
 L'icône du jeu apparaît alors sur votre appareil. Lorsque vous ouvrez la page du jeu via cette icône, celle-ci se comporte comme une application autonome (affichage forcé en mode paysage).
 
-Le forcing en mode paysage fonctionne bien avec Chrome Mobile, mais pas sur le navigateur par défaut de Samsung, d'après ce que j'ai pu constater. Je ne sais pas où en sont les autres navigateurs mobile, de ce côté là.
+Le forcing en mode paysage fonctionne bien avec Chrome Mobile, mais pas sur le navigateur par défaut de Samsung, d'après ce que j'ai pu constater. Je ne sais pas où en sont les autres navigateurs mobile, de ce côté là, mais il est fort probable que les standards évoluent prochainement, et avec eux, le comportement des navigateurs web pour mobile ;)
 
 ## Description technique
 Ce jeu a été entièrement fait à la main, si je puis dire, dans la mesure où il ne s'appuie sur aucun framework, aucune librairie.
