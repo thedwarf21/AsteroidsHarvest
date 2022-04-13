@@ -1,0 +1,103 @@
+/* Image de fond */
+.home-screen {
+	background-image: url('../images/space.jpg');
+	background-size: cover;
+	background-position: center;
+
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+}
+
+/** Premier écran de choix : "Nouvelle partie" / "Continuer" **/
+.home-screen .buttons-panel {
+	position: fixed;
+	width: 100vh;
+	height: 100vh;
+	top: 0;
+	right: 0;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+}
+@keyframes leaveToRight {
+	0% { transform: none; }
+	100% { transform: translateX(100vh) rotateY(-0.25turn) }
+}
+
+.home-screen .buttons-panel .title {
+	color: #f9e7a4;
+	text-shadow: 0 0 7px #ff0202;
+	font-family: sans-serif;
+	font-size: 8vh;
+	animation: enterFromTop 1.5s ease-in-out;
+}
+@keyframes enterFromTop {
+	0% { transform: translateY(-20vh) rotateX(-2turn); }
+	100% { transform: none; }
+}
+
+.home-screen .buttons-panel .button {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	font-size: 2.7vh;
+	font-family: sans-serif;
+	background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,.5));
+
+	animation: enterFromRight 1.5s ease-in-out;
+}
+@keyframes enterFromRight {
+	0% { transform: translateX(35vh) rotateY(-0.25turn); }
+	100% { transform: none; }
+}
+
+/** Second écran : choix de l'emplacement de sauvegarde **/
+.game-slots-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	animation: enterFromLeft 1s ease-in-out;
+}
+@keyframes enterFromLeft {
+	0% { transform: translateX(-50%) rotateY(-0.25turn); }
+	100% { transform: none; }
+}
+
+.game-slot {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	width: 40vh;
+	height: 45vh;
+
+	cursor: pointer;
+	text-align: center;
+	color: white;
+	border-radius: 2vh;
+	box-shadow: 0 0 0.2vh;
+	background: linear-gradient(to bottom, rgb(106 25 0 / 90%), rgb(255 106 0 / 65%));
+}
+.game-slot:hover { box-shadow: 0 0 2vh; }
+.game-slot:active { box-shadow: inset 0 0 2vh rgba(0 0 0 / 50%); }
+
+.game-slot .slot-name {
+	font-family: sans-serif;
+	font-size: 5vh;
+	font-weight: bold;
+}
+
+.game-slot .slot-details {
+	font-family: sans-serif;
+	font-size: 3vh;
+	font-style: italic;
+}

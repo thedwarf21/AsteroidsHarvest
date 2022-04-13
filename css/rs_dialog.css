@@ -1,0 +1,112 @@
+
+/***** Boîtes de dialogue *****/
+
+/*** La div de fond (rend la boîte de dialogue modale en inactivant le reste de la fenêtre) ***/
+.rs-modal-bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 25;
+
+  background-color: rgba(0, 0, 0, 0.6);
+  
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/*** Fenêtre modale ***/
+.rs-modal {
+  width: 80vw;
+  max-height: 80vh;
+
+  transition-property: width transform opacity;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  -ms-transition-property: width transform opacity;
+  -ms-transition-duration: 0.5s;
+  -ms-transition-timing-function: ease-in-out;
+  -webkit-transition-property: width transform opacity;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-in-out;
+
+  border-radius: 5px;
+  box-shadow: 0px 0px 12px 0px black;
+}
+.rs-closed {
+  transform: translateY(calc(50vh + 50%));
+  width: 10vw;
+  opacity: 0;
+}
+
+/*** Titre de la fenêtre ***/
+.rs-modal-title {
+  font-size: 2.5vh;
+  background-color: steelblue;
+  color: white;
+  border-radius: 5px 5px 0 0;
+
+  text-align: center;
+  width: 100%;
+  min-height: 3.8vh;
+  border-bottom: 1px solid black;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+/*** Bouton de fermeture de la boîte de dialogue ***/
+.rs-close-btn {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  cursor: pointer;
+
+  background-color: red;
+  color: white;
+  font-family: Arial Black;
+  font-weight: bolder;
+  font-size: 18px;
+  border: 1px solid black;
+  border-radius: 3px;
+}
+.rs-close-btn:hover { opacity: 0.6; }
+
+/*** Contenu de la boîte de dialogue ***/
+.rs-modal-content {
+  background-color: white;
+  color: black;
+  font-size: 2vh;
+  border-radius: 0 0 5px 5px;
+  
+  position: relative;
+  width: 100%;
+  height: calc(100% - 3.8vh);
+  overflow-y: auto;
+}
+
+/* Boutons d'action */
+.rs-btn-action { 
+  margin-bottom: 1.5vh;
+  padding: 1vh;
+  border: none;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(to bottom, #666, #888 60%, #CCC);
+  color: #2d2d2d;
+  border-radius: 5px;
+  font-size: 1.5vh;
+  height: 3vh;
+  cursor: pointer;
+}
+.rs-btn-action:active {
+    transform: translateY(1px);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+.rs-btn-action:hover {
+    background: linear-gradient(to bottom, #777, #999 60%, #DDD);
+}

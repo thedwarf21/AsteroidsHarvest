@@ -1,0 +1,71 @@
+/*** Le HUD n'est visible que sur appareils mobiles ***/
+.hud { opacity: 0; }
+@media screen and (max-width:1024px) { 
+	.hud { opacity: 0.7; } 
+}
+
+.hud .button {
+	position: absolute;
+	border-radius: 50%;
+	background: radial-gradient(circle at center, white 10%, transparent);
+	width: 15vh;
+	height: 15vh;
+}
+
+.hud .button.left {
+    bottom: 25vh;
+    left: 12vh;
+
+    width: 18vh;
+    border-radius: 0;
+    clip-path: polygon(100% 50%, 67% 100%, 0% 100%, 0% 0%, 67% 0%);
+}
+
+.hud .button.right {
+    bottom: 25vh;
+    left: 35vh;
+    
+    width: 18vh;
+    border-radius: 0;
+    clip-path: polygon(0% 50%, 33% 0%, 100% 0%, 100% 100%, 33% 100%);
+}
+
+.hud .button.forward {
+    bottom: 35vh;
+    left: 25vh;
+    
+    height: 18vh;
+    border-radius: 0;
+    clip-path: polygon(50% 100%, 0% 67%, 0% 0%, 100% 0%, 100% 67%);
+}
+
+.hud .button.backward {
+    bottom: 12vh;
+    left: 25vh;
+    
+    height: 18vh;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 100% 33%, 100% 100%, 0% 100%, 0% 33%);
+}
+
+.hud .button.fire {
+	height: 35vh;
+	width: 35vh;
+	bottom: 5vh;
+	right: 5vh;
+}
+
+.hud .pause {
+	height: 20vh;
+	width: 20vh;
+	top: 10vh;
+	right: 10vh;
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	color: black;
+	font-family: Impact;
+	font-size: 10vh;
+}
