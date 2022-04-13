@@ -1,5 +1,5 @@
 # AsteroidsHarvest
-Jeu "home made" (en 10 jours) de destruction d'astéroïdes
+Jeu "home made" (en 12 jours) de destruction d'astéroïdes
 
 Sur appareils mobiles, grâce à l'utilisation du fichier **manifest.json**, il est possible d'utiliser le jeu de la même manière qu'une application autonome (non garanti avec d'autres navigateurs web que Chrome mobile, pour le moment, mais cela devrait entrer prochainement dans les standards).
 
