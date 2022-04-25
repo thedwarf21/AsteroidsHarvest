@@ -7,6 +7,7 @@ class AH_Timer {
 	 * Lance le timer
 	 */
 	static letsPlay() {
+		document.body.scrollTo(0, 0);
 		if (!AH_MainController.scope.controls.paused) {
 			AH_Timer.__applyControls();
 			AH_Timer.__moveEverything();
@@ -86,7 +87,7 @@ class AH_Timer {
 				spaceship.explode();
 				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
 				AH_MainController.stopMusicLoop();
-				AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME);
+				AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME, true);
 			}
 		}
 

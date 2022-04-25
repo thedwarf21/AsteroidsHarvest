@@ -32,7 +32,7 @@ const EXPLOSION_AUDIO_TIME = 5000;
 const SPACESHIP_HITBOX_RADIUS_COEF = 0.6;
 const AST_HITBOX_RADIUS_COEF = 0.8;
 
-const MONEY_PER_BONUS = 100;
+const BONUS_MULTIPLIER = 5;
 const BONUS_MAX_SPEED = 8;  		// Vitesse max en pixel par intervalle, PAR AXE
 const BONUS_LIFE_TIME = 200;		// Durée de vie d'un bonus en nombre d'intervalles => 200 à 50ms -> 10s
 const BONUS_BLINK_START_AT = 60;    // Nombre d'intervalles de vie restant au bonus en dessous duquel il clignote => 60 à 50ms -> 3s
@@ -76,6 +76,8 @@ class AH_MainController {
 				beforeNextShot: 0,
 				tinyAstDestroyed: 0,
 				bonusCollected: 0,
+				sound_fx_on: true,
+				music_on: true,
 				showHitboxes: false,
 				radial_sensivity: 1
 			},
@@ -92,7 +94,7 @@ class AH_MainController {
 				code: "INC",
 				description: "Vous extrayez plus de minerais des asteroïdes que vous réduisez en poussière.",
 				lbl_effect: "Revenus par petit astéroïde détruit",
-				level_0_effect: 0,
+				level_0_effect: 10,
 				upgrade_value: 10,
 				level_1_price: 300,
 				level_2_price_coef : 1.5,
@@ -176,9 +178,6 @@ class AH_MainController {
 			if (e.code == "Space")
 				controls.spacePressed = false;
 		});
-
-		// Lancement du gestionnaire de Timer
-		AH_Timer.letsPlay();
 	}
 
 	/**
@@ -225,26 +224,35 @@ class AH_MainController {
 		
 		// Ouverture du magasin
 		let home_screen = new AH_HomeScreen();
+
+		// Lancement du gestionnaire de Timer
+		AH_Timer.letsPlay();
 	}
 
-	//--------------------------- CONTROLES AUDIO ET PAUSE ---------------------------
+	//--------------------------- CONTROLES AUDIO ET PAUSE DU JEU ---------------------------
 
 	/**
 	 * Fonction lançant un son dans une balise audio créée à la volée
 	 *
 	 * @param      {string}  filename      Nom du fichier audio
 	 * @param      {number}  lasting_time  Durée de vie de la balise audio (en fonction du son envoyé)
+	 * @param      {boolean} is_music      Permet d'identifier effets sonores et musiques
 	 */
-	static playAudio(filename, lasting_time) {
-		let audio_player = document.createElement("AUDIO");
-		audio_player.src = AUDIO_PATH + filename;
-		document.body.appendChild(audio_player);
-		audio_player.play().catch((error)=> { console.error(error); });
+	static playAudio(filename, lasting_time, is_music) {
+		let can_play = is_music 
+					 ? AH_MainController.scope.game.music_on 
+					 : AH_MainController.scope.game.sound_fx_on;
+		if (can_play) {
+			let audio_player = document.createElement("AUDIO");
+			audio_player.src = AUDIO_PATH + filename;
+			document.body.appendChild(audio_player);
+			audio_player.play().catch((error)=> { console.error(error); });
 
-		// On retire la balise audio du DOM, dès lors qu'elle n'est plus utile
-		if (!lasting_time)
-			lasting_time = DEFAULT_AUDIO_LASTING_TIME;
-		setTimeout(()=> audio_player.remove(), lasting_time);	
+			// On retire la balise audio du DOM, dès lors qu'elle n'est plus utile
+			if (!lasting_time)
+				lasting_time = DEFAULT_AUDIO_LASTING_TIME;
+			setTimeout(()=> audio_player.remove(), lasting_time);	
+		}
 	}
 
 	/**
@@ -253,13 +261,15 @@ class AH_MainController {
 	 * @param      {string}  filename  Le nom du fichier
 	 */
 	static startMusicLoop(filename) {
-		AH_MainController.stopMusicLoop();
-		let audio_player = document.createElement("AUDIO");
-		audio_player.src = AUDIO_PATH + filename;
-		audio_player.loop = true;
-		document.body.appendChild(audio_player);
-		audio_player.play().catch((error)=> { console.error(error); });
-		AH_MainController.scope.music_player = audio_player;
+		if (AH_MainController.scope.game.music_on) {
+			AH_MainController.stopMusicLoop();
+			let audio_player = document.createElement("AUDIO");
+			audio_player.src = AUDIO_PATH + filename;
+			audio_player.loop = true;
+			document.body.appendChild(audio_player);
+			audio_player.play().catch((error)=> { console.error(error); });
+			AH_MainController.scope.music_player = audio_player;
+		}
 	}
 
 	/**
@@ -381,8 +391,10 @@ class AH_MainController {
 			level: AH_MainController.scope.game.level,
 			shop: [],
 			radial_sensivity: AH_MainController.scope.game.radial_sensivity,
-			show_hitboxes: AH_MainController.scope.game.showHitboxes
-		}
+			show_hitboxes: AH_MainController.scope.game.showHitboxes,
+			sound_fx_on: AH_MainController.scope.game.sound_fx_on,
+			music_on: AH_MainController.scope.game.music_on
+		};
 		for (let shopElem of AH_MainController.scope.shop) {
 			object.shop.push({
 				code: shopElem.code,
@@ -402,6 +414,8 @@ class AH_MainController {
 		AH_MainController.scope.game.level = saved_game.level;
 		AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
 		AH_MainController.scope.game.showHitboxes = saved_game.show_hitboxes;
+		AH_MainController.scope.game.sound_fx_on = saved_game.sound_fx_on == undefined ? true : saved_game.sound_fx_on;
+		AH_MainController.scope.game.music_on = saved_game.music_on == undefined ? true : saved_game.music_on;
 		for (let savedShopElem of saved_game.shop)
 			AH_Shop.setShopItemLevel(savedShopElem.code, savedShopElem.level);
 		document.getElementById("btn_close").value = `Affronter vague ${saved_game.level}`;
@@ -450,7 +464,7 @@ class AH_MainController {
 			// Cette fonction anonyme s'exécute, juste après l'injection du template, dans le DOM
 			let income_shop_level = AH_Shop.getShopAttributeValue("INC");
 			let bonus_collected = AH_MainController.scope.game.bonusCollected;
-			let bonus_income = (MONEY_PER_BONUS + income_shop_level) * bonus_collected;
+			let bonus_income = (BONUS_MULTIPLIER * income_shop_level) * bonus_collected;
 			let tiny_ast_destroyed = AH_MainController.scope.game.tinyAstDestroyed;
 			let tiny_ast_income = income_shop_level * tiny_ast_destroyed;
 			let total_income = level_failed
@@ -506,9 +520,27 @@ class AH_MainController {
 				property: "radial_sensivity"
 			}).addBinding(popup.querySelector("#radial_sensivity"), "value", "change");
 
+			// Binding sons on/off
+			new RS_Binding({
+				object: AH_MainController.scope.game,
+				property: "sound_fx_on"
+			}).addBinding(popup.querySelector("#sound_fx_on"), "checked", "change");
+
+			// Binding musique on/off
+			new RS_Binding({
+				object: AH_MainController.scope.game,
+				property: "music_on"
+			}).addBinding(popup.querySelector("#music_on"), "checked", "change", function() {
+				if (AH_MainController.scope.game.music_on) {
+					let music_loop_filename = was_paused ? "audiohub_don-t-stop-rockin.mp3" : "audiohub_impulsive.mp3";
+					AH_MainController.startMusicLoop(music_loop_filename);
+				} else AH_MainController.stopMusicLoop();
+			});
+
 			// Gestion du clic sur les boutons de sauvegarde et de chargement
 			popup.querySelector("#btn_close").addEventListener("click", ()=> {
 				popup.closeModal();
+				AH_MainController.saveGame();
 				if (!was_paused)
 					AH_MainController.scope.controls.paused = false;
 			});

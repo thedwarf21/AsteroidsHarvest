@@ -437,7 +437,7 @@ class AH_Asteroid extends MobileGameElement {
       let x_center = this.x + BASE_AST_SIZE / 2;
       let y_center = this.y + BASE_AST_SIZE / 2;
 
-      // Création de deux nouveaux astéroïdes plus petits
+      // Création de <NUMBER_OF_SUB_AST> nouveaux astéroïdes plus petits
       for (let i=0; i < NUMBER_OF_SUB_AST; i++) {
         let asteroid = new AH_Asteroid(this.size - 1, x_center, y_center);
         AH_MainController.addToGameWindow(asteroid);
