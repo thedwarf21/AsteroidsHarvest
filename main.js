@@ -76,6 +76,8 @@ class AH_MainController {
 				beforeNextShot: 0,
 				tinyAstDestroyed: 0,
 				bonusCollected: 0,
+				sound_fx_on: true,
+				music_on: true,
 				showHitboxes: false,
 				radial_sensivity: 1
 			},
@@ -176,9 +178,6 @@ class AH_MainController {
 			if (e.code == "Space")
 				controls.spacePressed = false;
 		});
-
-		// Lancement du gestionnaire de Timer
-		AH_Timer.letsPlay();
 	}
 
 	/**
@@ -225,9 +224,12 @@ class AH_MainController {
 		
 		// Ouverture du magasin
 		let home_screen = new AH_HomeScreen();
+
+		// Lancement du gestionnaire de Timer
+		AH_Timer.letsPlay();
 	}
 
-	//--------------------------- CONTROLES AUDIO ET PAUSE ---------------------------
+	//--------------------------- CONTROLES AUDIO ET PAUSE DU JEU ---------------------------
 
 	/**
 	 * Fonction lançant un son dans une balise audio créée à la volée
@@ -381,8 +383,10 @@ class AH_MainController {
 			level: AH_MainController.scope.game.level,
 			shop: [],
 			radial_sensivity: AH_MainController.scope.game.radial_sensivity,
-			show_hitboxes: AH_MainController.scope.game.showHitboxes
-		}
+			show_hitboxes: AH_MainController.scope.game.showHitboxes,
+			sound_fx_on: AH_MainController.scope.game.sound_fx_on,
+			music_on: AH_MainController.scope.game.music_on
+		};
 		for (let shopElem of AH_MainController.scope.shop) {
 			object.shop.push({
 				code: shopElem.code,
@@ -402,6 +406,8 @@ class AH_MainController {
 		AH_MainController.scope.game.level = saved_game.level;
 		AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
 		AH_MainController.scope.game.showHitboxes = saved_game.show_hitboxes;
+		AH_MainController.scope.game.sound_fx_on = saved_game.sound_fx_on;
+		AH_MainController.scope.game.music_on = saved_game.music_on;
 		for (let savedShopElem of saved_game.shop)
 			AH_Shop.setShopItemLevel(savedShopElem.code, savedShopElem.level);
 		document.getElementById("btn_close").value = `Affronter vague ${saved_game.level}`;
