@@ -2,14 +2,26 @@
 	<div class="report-text report-title">Préférences</div>
 
 	<div class="report-line">
+		<div class="report-text pref-title"><b>Musique:</b></div>
+		<input type="checkbox" class="pref-value" id="music_on" />
+		<!-- Attribut "checked" synchronisé à Ah_MainController.scope.game.music_on -->
+	</div>
+
+	<div class="report-line">
+		<div class="report-text pref-title"><b>Effets sonores:</b></div>
+		<input type="checkbox" class="pref-value" id="sound_fx_on" />
+		<!-- Attribut "checked" synchronisé à Ah_MainController.scope.game.sound_fx_on -->
+	</div>
+
+	<div class="report-line">
 		<div class="report-text pref-title"><b>Afficher les hitbox:</b></div>
 		<input type="checkbox" class="pref-value" id="show_hitboxes" />
-		<!-- Attribut "value" synchronisé à Ah_MainController.scope.game.showHitboxes -->
+		<!-- Attribut "checked" synchronisé à Ah_MainController.scope.game.showHitboxes -->
 	</div>
 
 	<div class="report-line">
 		<div class="report-text pref-title"><b>Sensibilité radiale:</b></div>
-		<input type="range" class="pref-value" id="radial_sensivity" min="0.5" max="1.5" step="0.1">
+		<input type="range" class="pref-value" id="radial_sensivity" min="0.5" max="1.5" step="0.1" />
 		<!-- Attribut "value" synchronisé à Ah_MainController.scope.game.radial_sensivity -->
 	</div>
 </div>
