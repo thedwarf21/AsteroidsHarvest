@@ -23,7 +23,7 @@
 .toast {
 	width: calc(100vw - 4vh);
 	margin: 1vh;
-	background: #002ca9;
+	background: linear-gradient(to bottom, steelblue, #002ca9);
 	border-radius: 0.5vh;
 	box-shadow: 0 0 1vh #000b;
 	
