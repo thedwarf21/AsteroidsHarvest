@@ -402,6 +402,7 @@ class AH_MainController {
 			});
 		}
 		localStorage.setItem("ah_save_" + AH_MainController.scope.game.save_slot, JSON.stringify(object));
+		RS_Toast.show("Partie sauvegardée avec succès", 3000);
 	}
 
 	/**
@@ -421,6 +422,7 @@ class AH_MainController {
 		document.getElementById("btn_close").value = `Affronter vague ${saved_game.level}`;
 		document.getElementById("player_money").innerHTML = `${AH_MainController.intToHumanReadableString(AH_MainController.scope.game.money)} Brouzoufs`;
 		AH_Shop.refreshAllShopItems();
+		RS_Toast.show("Chargement de la sauvegarde effectué", 3000);
 	}
 
 	//--------------------------- VALEURS NUMERIQUE (random et affichage) ---------------------------
