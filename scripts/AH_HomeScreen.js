@@ -9,6 +9,7 @@ class AH_HomeScreen {
 	 * Construction de l'écran d'accueil
 	 */
 	constructor() {
+		this.convertCookieSaveIfNecessary();
 
 		// Image de fond > conteneur flex en colonne > titre
 		this.home_screen = document.createElement("DIV");
@@ -44,17 +45,42 @@ class AH_HomeScreen {
 	get hasFreeSlots() { return !localStorage.getItem('ah_save_1') || !localStorage.getItem('ah_save_2') || !localStorage.getItem('ah_save_3'); }
 
 	/**
+	 * Si aucune sauvegarde n'a été trouvée dans les emplacements localStorage
+	 * => Si une ancienne sauvegarde (cookie) a été trouvée
+	 * ==> Récupération de l'ancienne sauvegarde pour l'enregistrer dans le 1er emplacement localStorage
+	 */
+	convertCookieSaveIfNecessary() {
+		if (!this.hasSavedGames) {
+			let name = "saved_game=";
+			let cookie = document.cookie;
+			let startIndex = cookie.indexOf(name) + name.length;
+			let endIndex = cookie.indexOf(";", startIndex);
+			if (startIndex - name.length != -1) {
+				let cookieContent = cookie.substring(startIndex, (endIndex == -1 ? undefined : endIndex));
+				let saved_game = JSON.parse(cookieContent);
+				AH_MainController.scope.game.money = saved_game.money;
+				AH_MainController.scope.game.level = saved_game.level;
+				AH_MainController.scope.game.radial_sensivity = saved_game.radial_sensivity;
+				AH_MainController.scope.game.showHitboxes = saved_game.show_hitboxes;
+				for (let savedShopElem of saved_game.shop)
+					AH_Shop.setShopItemLevel(savedShopElem.code, savedShopElem.level);
+				localStorage.setItem('ah_save_1');
+			}
+		}
+	}
+
+	/**
 	 * Passage au second écran : choix de l'emplacement de sauvegarde à utiliser
 	 *  - Les emplacements vides ne sont sélectionnables qu'en "Nouvelle partie"
 	 *  - Les emplacements occupés ne sont sélectionnables qu'en "Continuer" 
 	 */
 	newGame() { 
 		if (!this.hasFreeSlots)
-			RS_Alert("Tous les emplacements de sauvegarde sont utilisés", "Opération impossible", "Ok");
+			RS_Toast.show("<b>Opération impossible</b> : tous les emplacements de sauvegarde sont utilisés", 3000);
 		else this.__displayGameSlotChooseScreen(true); }
 	loadGame() {
 		if (!this.hasSavedGames)
-			RS_Alert("Aucune sauvegarde trouvée", "Opération impossible", "Ok"); 
+			RS_Toast.show("<b>Opération impossible</b> : aucune sauvegarde trouvée", 3000); 
 		else this.__displayGameSlotChooseScreen(false);
 	}
 	__displayGameSlotChooseScreen(is_new_game) {
@@ -66,9 +92,9 @@ class AH_HomeScreen {
 			let game_slot = this.__getGameSlot(i);
 			game_slot.addEventListener('click', ()=> {
 				if (game_slot.is_empty && !is_new_game)
-					RS_Alert("Veuillez choisir une partie en cours", "Opération impossible", "Ok");
+					RS_Toast.show("Veuillez choisir une partie en cours", 3000);
 				else if (!game_slot.is_empty && is_new_game)
-					RS_Alert("Cet emplecement est déjà utilisé", "Opération impossible", "Ok");
+					RS_Toast.show("Cet emplecement est déjà utilisé", 3000);
 				else {
 					this.home_screen.remove();
 					AH_MainController.scope.game.save_slot = i;
