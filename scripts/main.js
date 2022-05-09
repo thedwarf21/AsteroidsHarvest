@@ -459,7 +459,6 @@ class AH_MainController {
 	 * level_failed  boolean  permet de savoir si l'application du coef de lose est pertinent
 	 */
 	static showWaveIncomesReport(level_failed) {
-		AH_MainController.saveGame();
 		AH_MainController.scope.controls.paused = true;
 		let popup = new RS_Dialog("report_dialog", "Rapport de vague", [], [], [], false, "tpl_report.html", function() {
 
@@ -475,7 +474,8 @@ class AH_MainController {
 
 			// Affichage des données et mise à jour des éléments calculés
 			AH_MainController.scope.game.money += total_income;
-			document.getElementById("bonus_collected").innerHTML = AH_MainController.scope.game.bonusCollected;
+			AH_MainController.saveGame();
+                        document.getElementById("bonus_collected").innerHTML = AH_MainController.scope.game.bonusCollected;
 			document.getElementById("bonus_income").innerHTML = AH_MainController.intToHumanReadableString(bonus_income);
 			document.getElementById("tiny_ast_destroyed").innerHTML = AH_MainController.scope.game.tinyAstDestroyed;
 			document.getElementById("tiny_ast_income").innerHTML = AH_MainController.intToHumanReadableString(tiny_ast_income);
