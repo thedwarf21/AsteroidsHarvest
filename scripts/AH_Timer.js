@@ -29,7 +29,7 @@ class AH_Timer {
 		else if (scope.controls.spacePressed) {
 			spaceship.shoot();
 			scope.game.beforeNextShot = AH_Shop.getShopAttributeValue("ASP");
-			AH_MainController.playAudio("shoot.mp3");
+			AH_AudioManager.playAudio(SOUND_LIB.shoot);
 		}
 
 		// Gestion du contrôle de la rotation du vaisseau
@@ -78,16 +78,16 @@ class AH_Timer {
 				if (shot.hitbox.checkCollide(asteroid.hitbox)) {
 					asteroid.impact(shot.angle_rad, shot.power);
 					shot.explode();
-					AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
+					AH_AudioManager.playAudio(SOUND_LIB.explosion, EXPLOSION_AUDIO_TIME);
 				}
 			}
 
 			// Contrôle de collision avec le vaisseau
 			if (spaceship.hitbox.checkCollide(asteroid.hitbox)) {
 				spaceship.explode();
-				AH_MainController.playAudio("explosion.mp3", EXPLOSION_AUDIO_TIME);
-				AH_MainController.stopMusicLoop();
-				AH_MainController.playAudio("defeat.mp3", EXPLOSION_AUDIO_TIME, true);
+				AH_AudioManager.playAudio(SOUND_LIB.explosion, EXPLOSION_AUDIO_TIME);
+				AH_AudioManager.stopMusicLoop();
+				AH_AudioManager.playAudio(SOUND_LIB.lose, EXPLOSION_AUDIO_TIME, true);
 			}
 		}
 
@@ -96,7 +96,7 @@ class AH_Timer {
 			if (spaceship.hitbox.checkCollide(bonus.hitbox)) {
       			AH_MainController.scope.game.bonusCollected++;
 				bonus.remove();
-				AH_MainController.playAudio("coin.mp3");
+				AH_AudioManager.playAudio(SOUND_LIB.money);
 			}
 		}
 	}

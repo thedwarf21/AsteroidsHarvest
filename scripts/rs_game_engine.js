@@ -86,7 +86,8 @@ class RS_Hitbox {
  * Elle fonctionne sur un principe de coordonnées virtuelles :
  * 		- Le programme principal continue d'utiliser des coordonnées virtuelles en pixels sur un 
  * 		  écran virtuel à hauteur/largeur fixe (l'autre dimension est calculée à l'aide du ratio réel de l'écran)
- * 		- La classe, une fois paramétrés "base_axis" et "base_axis_virtual_size", convertit les coordonnées en %
+ * 		- La classe, une fois paramétrés "base_axis" et "base_axis_virtual_size", convertit les coordonnées en % 
+ * 				=> utilisation de vh ou vw, pour appliquer les coordonnées dans l'interface, selon l'axe choisit
  * 		- Largeur et hauteur de l'écran virtuel en propriétés (pour détecter les sorties d'écran)
  *
  * @class      RS_ViewPortCompatibility

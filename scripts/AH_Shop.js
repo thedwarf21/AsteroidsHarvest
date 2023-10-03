@@ -32,7 +32,7 @@ class AH_Shop {
 	static show(onPopupShown) {
 		let scope = AH_MainController.scope;
 		scope.controls.paused = true;
-		AH_MainController.startMusicLoop("audiohub_don-t-stop-rockin.mp3");
+		AH_AudioManager.startMusicLoop(GAME_MUSIC);
 
 		// Construction de la popup
 		let popup = new RS_Dialog("shop", "Magasin", [], [], [], false, "tpl_shop.html", function() {
@@ -51,7 +51,7 @@ class AH_Shop {
 			closeBtn.value = "Affronter vague " + AH_MainController.scope.game.level;
 			closeBtn.addEventListener("click", ()=> {
 				popup.closeModal();
-				AH_MainController.saveGame();
+				AH_SaveManager.saveGame();
 				AH_MainController.startWave();
 			});
 
@@ -184,37 +184,4 @@ class AH_Shop {
 	 * Fonction métier s'appuyant sur getFibonacciValue recevant en paramètre un élément de la liste shop
 	 */
 	static __getPrice(shopElem) { return AH_Shop.__getFibonacciValue(shopElem.level_1_price, shopElem.level_2_price_coef, shopElem.level); }
-
-	/**
-	 * N'est plus utilisée
-	 * Je garde le code sous le coude pour quand je ferai l'écran d'aide... (c'est mieux quand il y en a un)
-	 */
-	/*static __getHtmlBlaBla() {
-		let listeRetour = [];
-
-		// Titre commandes
-		let titreCommandes = document.createElement("P");
-		titreCommandes.classList.add("shop-blabla");
-		titreCommandes.innerHTML = "<b><u>Commandes du jeu:</u></b>";
-		listeRetour.push(titreCommandes);
-
-		// Explication commande tir
-		let blablaTir = document.createElement("P");
-		blablaTir.classList.add("shop-blabla");
-		blablaTir.innerHTML = "Pour tirer, laissez simplement la barre espace enfoncée, comme un gros bourrin pour que votre vaisseau tire aussi vite que le lui permet son système de refroidissement (qu'il est possible d'améliorer dans ce magasin, je tenais à vous le rappeler).";
-		listeRetour.push(blablaTir);
-
-		// Explication commandes déplacement
-		let blablaMove = document.createElement("P");
-		blablaMove.classList.add("shop-blabla");
-		blablaMove.innerHTML = 'Pour vous déplacer utilisez les touches <img src="keyboard_arrows.png" class="in-text"/>: les touches gauche et droite permettent de faire pivoter le vaisseau, tandis que les touches haut et bas servent respectivement à accélrer et à ralentir.';
-		listeRetour.push(blablaMove);
-
-		// Conceil relatif à l'inertie
-		let blablaHint = document.createElement("P");
-		blablaHint.classList.add("shop-blabla");
-		blablaHint.innerHTML = "<b><u>Conseil:</u></b> Allez-y doucement sur l'accélération car vous êtes dans l'espace : pas de frottement ici, donc un élan ne peut être contré que par un élan inverse.";
-		listeRetour.push(blablaHint);
-		return listeRetour;
-	}*/
 }
