@@ -66,24 +66,24 @@ body {
 	transform: translate(1px, 1px);
 }
 .shop-item-name {
-	font-size: 2.6vh;
+	font-size: 3.2vh;
 	font-family: impact;
 }
 .shop-item-desc {
 	font-family: cursive;
-	font-size: 1.5vh;
+	font-size: 2vh;
 	text-align: justify;
 	text-indent: 2em;
 	margin-bottom: 1vh;
 }
 .shop-item-price {
 	font-family: monospace;
-	font-size: 1.9vh;
+	font-size: 2.5vh;
 }
 .shop-item-price.too-expensive { color: #c90000; }
 .shop-item-effect {
 	margin-bottom: 0.5vh;
-	font-size: 1.3vh;
+	font-size: 1.75vh;
 	font-family: sans-serif;
 }
 .shop-item-effect .green { color: #006000; }
