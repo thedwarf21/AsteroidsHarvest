@@ -122,11 +122,18 @@ class GamepadControlsMapper {
 	}
 
 	applyControlsMapping() {
-		let gamepad = navigator.getGamepads()[0];
+		let gamepad = GamepadControlsMapper.getConnectedGamepad();
 		for (let control of this.controls) {
 			if (control.buttonIndex && gamepad.buttons[control.buttonIndex].pressed)
 				control.execute();
 		}
+	}
+
+	static getConnectedGamepad() {
+		let gamepads = navigator.getGamepads();
+		for (let gamepad of gamepads)
+			if (gamepad != null)
+				return gamepad;
 	}
 }
 
@@ -200,7 +207,7 @@ class GamepadConfigInterface {
 
 	__captureButtonPressed(fnThen) {
 		let interval_id = setInterval(()=> {
-			let gamepad = navigator.getGamepads()[0];
+			let gamepad = GamepadControlsMapper.getConnectedGamepad();
 			for (let i=0; i<gamepad.buttons.length; i++) {
 				if (gamepad.buttons[i].pressed) {
 					clearInterval(interval_id);
