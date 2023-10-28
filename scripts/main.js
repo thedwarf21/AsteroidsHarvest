@@ -73,6 +73,7 @@ class AH_MainController {
 	static onLoad() {
 		AH_MainController.ah_viewport = new RS_ViewPortCompatibility("y", WINDOW_HEIGHT);
 		AH_GameInitializer.addTouchListeners();
+		AH_GameInitializer.prepareGamepadControls();
 		let home_screen = new AH_HomeScreen();
 		AH_Timer.letsPlay();
 	}
@@ -257,6 +258,10 @@ class AH_MainController {
 		AH_MainController.scope.controls.paused = true;
 		let popup = new RS_Dialog("report_dialog", "Paramètres utilisateur", [], [], [], false, "tpl_parameters.html", function() {
 
+			// Affichage du bouton de paramétrage des contrôles manette uniquement si manette paramétrée
+			if(!AH_MainController.scope.gamepadControlsUI)
+				popup.querySelector("#btn_gamepad_controls").remove();
+			
 			// Binding affichage des hitbox
 			new RS_Binding({
 				object: AH_MainController.scope.game,

@@ -29,8 +29,14 @@ class AH_GameInitializer {
 				rightPressed: false,
 				leftPressed: false,
 				spacePressed: false,
-				paused: true
+				paused: true,
+				padUp: false,
+				padDown: false,
+				padRight: false,
+				padLeft: false,
+				padFire: false
 			},
+			gamepad_mapper: null,
 			shop: [{
 				nom: "Techniques de rafinage",
 				code: "INC",
@@ -92,9 +98,6 @@ class AH_GameInitializer {
 		};
 	}
 
-	/**
-	 * Ajoute les listeners "keyDown" et "keyUp", pour les contrôles au clavier
-	 */
 	static addKeyListeners() {
 		window.addEventListener('keydown', function(e) {
 			let controls = AH_MainController.scope.controls;
@@ -126,9 +129,6 @@ class AH_GameInitializer {
 		});
 	}
 
-	/**
-	 * Ajoute les listeners "touchStart" et "touchEnd", pour les contrôles via les boutons du HUD
-	 */
 	static addTouchListeners() {
 		let controls = AH_MainController.scope.controls;
 		document.querySelector('.button.left').addEventListener('touchstart', 		function(e) { controls.leftPressed = true; });
@@ -147,5 +147,41 @@ class AH_GameInitializer {
 		document.querySelector('.button.fire').addEventListener('touchend', 		function(e) { controls.spacePressed = false; });
 		
 		document.querySelector('.hud .pause').addEventListener('click', 			function(e) { AH_MainController.togglePause(); });
+	}
+
+	static prepareGamepadControls() {
+		window.addEventListener('gamepadconnected', (event)=> {
+			console.log("Manette connectée");
+
+			let controls = AH_MainController.scope.controls;
+			let gcm = new GamepadControlsMapper();
+			gcm.addControlEntry("Pause", ()=> { AH_MainController.togglePause(); });
+			gcm.addControlEntry("Tirer", ()=> { controls.padFire = true; });
+			gcm.addControlEntry("Gauche", ()=> { controls.padLeft = true; });
+			gcm.addControlEntry("Droite", ()=> { controls.padRight = true; });
+			gcm.addControlEntry("Accélérer", ()=> { controls.padUp = true; });
+			gcm.addControlEntry("Décélérer", ()=> { controls.padDown = true; });
+
+			AH_MainController.scope.gamepad_mapper = gcm;
+			let was_paused = controls.paused;
+			controls.paused = true;
+			AH_MainController.scope.gamepadControlsUI = new GamepadConfigInterface(gcm, ()=> { controls.paused = was_paused; });
+		});
+
+		window.addEventListener('gamepaddisconnected', (event)=> {
+			AH_MainController.scope.gamepadControlsUI = null;
+			AH_MainController.scope.gamepad_mapper = null;
+			AH_GameInitializer.clearGamepadControls();
+			AH_MainController.togglePause();
+		});
+	}
+
+	static clearGamepadControls() {
+		let controls = AH_MainController.scope.controls;
+		controls.padUp = false;
+		controls.padDown = false;
+		controls.padRight = false;
+		controls.padLeft = false;
+		controls.padFire = false;
 	}
 }

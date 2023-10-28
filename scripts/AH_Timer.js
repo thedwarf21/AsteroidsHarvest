@@ -9,9 +9,15 @@ class AH_Timer {
 	static letsPlay() {
 		document.body.scrollTo(0, 0);
 		if (!AH_MainController.scope.controls.paused) {
+			if (AH_MainController.scope.gamepad_mapper)
+				AH_MainController.scope.gamepad_mapper.applyControlsMapping();
+
 			AH_Timer.__applyControls();
 			AH_Timer.__moveEverything();
 			AH_Timer.__testCollides();
+
+			if (AH_MainController.scope.gamepad_mapper)
+				AH_GameInitializer.clearGamepadControls();
 		}
 		setTimeout(AH_Timer.letsPlay, TIME_INTERVAL);
 	}
@@ -26,26 +32,26 @@ class AH_Timer {
 		// Gestion du temps de rechargement et du tir
 		if (scope.game.beforeNextShot)
 			scope.game.beforeNextShot--;
-		else if (scope.controls.spacePressed) {
+		else if (scope.controls.spacePressed || scope.controls.padFire) {
 			spaceship.shoot();
 			scope.game.beforeNextShot = AH_Shop.getShopAttributeValue("ASP");
 			AH_AudioManager.playAudio(SOUND_LIB.shoot);
 		}
 
 		// Gestion du contrôle de la rotation du vaisseau
-		if (scope.controls.leftPressed)
+		if (scope.controls.leftPressed || scope.controls.padLeft)
 			spaceship.angle -= ANGLE_STEP * AH_MainController.scope.game.radial_sensivity;
-		if (scope.controls.rightPressed)
+		if (scope.controls.rightPressed || scope.controls.padRight)
 			spaceship.angle += ANGLE_STEP * AH_MainController.scope.game.radial_sensivity;
 
 		// Conversion de l'angle en radian, pour utilisation des fonctions sinus et cosinus 
 		//=> calcul de la modification de l'inertie horizontale et verticale par trigonométrie
 		let angle_rad = spaceship.angle * Math.PI / 180; // Conversion de l'angle en radians
-		if (scope.controls.downPressed) {
+		if (scope.controls.downPressed || scope.controls.padDown) {
 		    spaceship.deltaX -= Math.sin(angle_rad);
 		    spaceship.deltaY -= Math.cos(angle_rad);
 		}
-		if (scope.controls.upPressed) {
+		if (scope.controls.upPressed || scope.controls.padUp) {
 		    spaceship.deltaX += Math.sin(angle_rad);
 		    spaceship.deltaY += Math.cos(angle_rad);
 		}
