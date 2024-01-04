@@ -158,7 +158,7 @@ class AH_MainController {
 
 		// Réinitialiser les compteurs (pour décompte final) puis démarrer le jeu
 		AH_MainController.scope.game.tinyAstDestroyed = 0;
-		AH_MainController.scope.game.bonusCollected = {};
+		AH_MainController.scope.game.bonusCollected = 0;
 		AH_MainController.scope.controls.paused = false;
 
 	}
