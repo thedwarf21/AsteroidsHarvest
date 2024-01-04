@@ -444,7 +444,7 @@ class AH_Asteroid extends MobileGameElement {
       }
 
       // Création du bonus
-      let bonus = new AH_Bonus(x_center, y_center);
+      let bonus = new AH_Bonus(x_center, y_center, this.size);
       AH_MainController.addToGameWindow(bonus);
     } else {
       // Gain d'argent puis, vérification de fin de niveau (plus d'astéroïde à détruire ?)
@@ -471,10 +471,11 @@ class AH_Bonus extends MobileGameElement {
   /***********************************************************************
    * Construction du bonus                                               *
    ***********************************************************************/
-  constructor(x, y) {
+  constructor(x, y, size) {
 
     // Construction HTML
     super(x, y);
+    this.size = size;
     this.classList.add("bonus");
     this.innerHTML = "€";
 
@@ -489,7 +490,7 @@ class AH_Bonus extends MobileGameElement {
    * Fonction d'initialisation *
    *****************************/
   __init() {
-    this.pixel_size = BONUS_SIZE;
+    this.pixel_size = BONUS_SIZE * this.size / 2;
     this.style.width = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
     this.style.height = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
     this.deltaX = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
