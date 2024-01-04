@@ -100,7 +100,8 @@ class AH_Timer {
 		// Collecte des bonus
 		for (let bonus of AH_MainController.bonusItems) {
 			if (spaceship.hitbox.checkCollide(bonus.hitbox)) {
-      			AH_MainController.scope.game.bonusCollected++;
+			//@TODO gérer un objet bonus par tailles
+      			AH_MainController.scope.game.bonusCollected += bonus.size;
 				bonus.remove();
 				AH_AudioManager.playAudio(SOUND_LIB.money);
 			}
