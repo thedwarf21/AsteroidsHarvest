@@ -43,7 +43,7 @@ class AH_GameInitializer {
 				description: "Vous extrayez plus de minerais des asteroïdes que vous réduisez en poussière.",
 				lbl_effect: "Revenus par petit astéroïde détruit",
 				level_0_effect: 10,
-				upgrade_value: 10,
+				upgrade_value: 15,
 				level_1_price: 300,
 				level_2_price_coef : 1.25,
 				level: 0
