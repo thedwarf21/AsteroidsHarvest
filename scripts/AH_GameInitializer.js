@@ -45,7 +45,7 @@ class AH_GameInitializer {
 				level_0_effect: 10,
 				upgrade_value: 10,
 				level_1_price: 300,
-				level_2_price_coef : 1.5,
+				level_2_price_coef : 1.25,
 				level: 0
 			}, {
 				nom: "Equipes de récupération",
