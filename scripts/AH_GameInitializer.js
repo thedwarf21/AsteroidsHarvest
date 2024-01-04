@@ -87,8 +87,6 @@ class AH_GameInitializer {
 				code: "POW",
 				description: "Des projectiles plus gros occasionnant plus de dégats.",
 				lbl_effect: "Multiplicateur de dégats",
-				value: [1, 1.5, 2, 2.5, 3],
-				price: [300, 400, 700, 1100],
 				level_0_effect: 1,
 				upgrade_value: 0.5,
 				level_1_price: 500,
