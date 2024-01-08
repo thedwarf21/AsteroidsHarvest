@@ -9,7 +9,7 @@ const ANGLE_STEP = 11.25;
 const SPACESHIP_SIZE = 50;
 const SHOT_BASE_SIZE = 5;
 const BASE_AST_SIZE = 15;
-const BONUS_SIZE = 25;
+const BONUS_SIZE = 20;
 
 const AUDIO_PATH = "sounds/";
 const SHOP_MUSIC = "audiohub_impulsive.mp3";
