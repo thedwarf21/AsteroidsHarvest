@@ -493,6 +493,7 @@ class AH_Bonus extends MobileGameElement {
     this.pixel_size = BONUS_SIZE * this.size / 2;
     this.style.width = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
     this.style.height = AH_MainController.ah_viewport.getCssValue(this.pixel_size, true);
+    this.style.fontSize = AH_MainController.ah_viewport.getCssValue(this.pixel_size * 0.75, true);
     this.deltaX = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.deltaY = AH_MainController.reelAleatoire(BONUS_MAX_SPEED) - (BONUS_MAX_SPEED / 2);
     this.timeRemaining = BONUS_LIFE_TIME;
